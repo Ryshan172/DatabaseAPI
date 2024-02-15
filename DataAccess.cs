@@ -104,19 +104,31 @@ public class DataAccess
         }
     }
 
-    public async Task AddDepartmentAsync(string department)
+    public async Task AddDepartmentAsync(string departmentName)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        
+        try
         {
-            await connection.OpenAsync();
-
-            using (var command = new SqlCommand("INSERT INTO Departments (Department) VALUES (@Department)", connection))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@Department", department);
-                await command.ExecuteNonQueryAsync();
+                await connection.OpenAsync();
+
+                var sql = "INSERT INTO Departments (Department) VALUES (@Department)";
+                using (var command = new SqlCommand(sql, connection))
+                {   
+                    
+                    command.Parameters.AddWithValue("@Department", departmentName);
+                    await command.ExecuteNonQueryAsync();
+                }
             }
         }
+        catch (Exception ex)
+        {
+            // Handle exception as needed
+            throw new Exception($"Error adding department: {ex.Message}");
+        }
     }
+
     
     
 
