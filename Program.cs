@@ -1,13 +1,29 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using System.Data.SqlClient;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Define connection string
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Register SqlConnection as a service
+builder.Services.AddTransient(provider => new SqlConnection(connectionString));
+
+// Register DataAccess as a service
+builder.Services.AddTransient<DataAccess>(provider => new DataAccess(connectionString));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -16,29 +32,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Map a GET request to the "/roles" endpoint.
+// When a GET request is made to "/roles", the specified callback function is executed.
+app.MapGet("/roles", async (DataAccess dataAccess) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    // Use the DataAccess class to retrieve roles from the database asynchronously.
+    var roles = await dataAccess.GetRolesAsync();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    // Return the retrieved roles as the response to the client.
+    return roles;
 })
-.WithName("GetWeatherForecast")
+// Assign a name to the route for documentation purposes e.g. "GetRoles"
+.WithName("GetRoles")
+// Enable OpenAPI (Swagger) documentation for this route. Allows route to be displayed in Swagger UI
 .WithOpenApi();
 
-app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+app.Run();

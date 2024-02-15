@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\bbdnet3337\\Documents\\API-Project\\DatabaseAPI\\DatabaseAPI.csproj": {}
+    "c:\\Users\\bbdnet3337\\Documents\\API-Project\\Practice\\DatabaseAPI.csproj": {}
   },
   "projects": {
-    "c:\\Users\\bbdnet3337\\Documents\\API-Project\\DatabaseAPI\\DatabaseAPI.csproj": {
+    "c:\\Users\\bbdnet3337\\Documents\\API-Project\\Practice\\DatabaseAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\DatabaseAPI\\DatabaseAPI.csproj",
+        "projectUniqueName": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\Practice\\DatabaseAPI.csproj",
         "projectName": "DatabaseAPI",
-        "projectPath": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\DatabaseAPI\\DatabaseAPI.csproj",
+        "projectPath": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\Practice\\DatabaseAPI.csproj",
         "packagesPath": "C:\\Users\\bbdnet3337\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\DatabaseAPI\\obj\\",
+        "outputPath": "c:\\Users\\bbdnet3337\\Documents\\API-Project\\Practice\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\bbdnet3337\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -47,6 +47,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.6, )"
             }
           },
           "imports": [
