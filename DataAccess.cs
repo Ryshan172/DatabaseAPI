@@ -52,4 +52,74 @@ public class DataAccess
     }
 
     // Need to add more methods to retrieve other data 
+
+    // GET Method for Universities Table
+    public async Task<List<string>> GetUniversities()
+    {
+        // Establish a connection to the database
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+
+            // Initialize a list to store the roles
+            var universities = new List<string>();
+
+            // SQL to Select University Names 
+            using (var command = new SqlCommand("SELECT UniName FROM Universities ", connection))
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    universities.Add(reader.GetString(0));
+                }
+            }
+
+            return universities;
+        }
+    }
+
+
+    // GET Method for Departments Table
+    public async Task<List<string>> GetDepartments()
+    {
+        // Establish a connection to the database
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+
+            // Initialize a list to store the roles
+            var departments = new List<string>();
+
+            // SQL to Select Department Names 
+            using (var command = new SqlCommand("SELECT Department FROM Departments ", connection))
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    departments.Add(reader.GetString(0));
+                }
+            }
+
+            return departments;
+        }
+    }
+
+    public async Task AddDepartmentAsync(string department)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+
+            using (var command = new SqlCommand("INSERT INTO Departments (Department) VALUES (@Department)", connection))
+            {
+                command.Parameters.AddWithValue("@Department", department);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+    }
+    
+    
+
+
+        
 }

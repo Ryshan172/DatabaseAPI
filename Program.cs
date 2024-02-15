@@ -48,4 +48,25 @@ app.MapGet("/roles", async (DataAccess dataAccess) =>
 .WithOpenApi();
 
 
+// Get Request for Universities 
+app.MapGet("/universities", async (DataAccess dataAccess) =>
+{
+    var universities = await dataAccess.GetUniversities();
+    return universities;
+})
+.WithName("GetUniversities")
+.WithOpenApi();
+
+
+// Get Request for Departments 
+app.MapGet("/departments", async (DataAccess dataAccess) =>
+{
+    var universities = await dataAccess.GetDepartments();
+    return universities;
+})
+.WithName("GetDepartments")
+.WithOpenApi();
+
+
+
 app.Run();
