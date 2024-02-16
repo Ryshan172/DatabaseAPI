@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Data.SqlClient;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,56 @@ app.MapGet("/roles", async (DataAccess dataAccess) =>
 })
 // Assign a name to the route for documentation purposes e.g. "GetRoles"
 .WithName("GetRoles")
+// Enable OpenAPI (Swagger) documentation for this route. Allows route to be displayed in Swagger UI
+.WithOpenApi();
+
+
+// Get Request for Universities 
+app.MapGet("/universities", async (DataAccess dataAccess) =>
+{
+    var universities = await dataAccess.GetUniversities();
+    return universities;
+})
+.WithName("GetUniversities")
+.WithOpenApi();
+
+
+// Get Request for Departments 
+app.MapGet("/departments", async (DataAccess dataAccess) =>
+{
+    var universities = await dataAccess.GetDepartments();
+    return universities;
+})
+.WithName("GetDepartments")
+.WithOpenApi();
+
+// POST Request for Departments 
+app.MapPost("/departments", async (DataAccess dataAccess, DepartmentModel departmentModel) =>
+{
+    try
+    {
+        // Access the department name from the departmentModel parameter
+        //string departmentName = departmentModel.Department;
+        string departmentName = "Eng";
+
+        // Call AddDepartmentAsync from the DataAccess class to add the department to the database
+        await dataAccess.AddDepartmentAsync(departmentName);
+
+        // Return a successful response
+        return new OkObjectResult("Department added successfully");
+    }
+    catch (Exception ex)
+    {
+        // Return an error response if an exception occurs
+        var errorMessage = $"An error occurred: {ex.Message}";
+        return new ObjectResult(errorMessage)
+        {
+            StatusCode = 500
+        };
+    }
+})
+// Assign a name to the route for documentation purposes e.g. "AddDepartment"
+.WithName("AddDepartment")
 // Enable OpenAPI (Swagger) documentation for this route. Allows route to be displayed in Swagger UI
 .WithOpenApi();
 
