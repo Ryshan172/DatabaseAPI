@@ -43,4 +43,32 @@ public class UniversitiesController : ControllerBase
             return StatusCode(500, $"An error occurred: {ex.Message}");
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllUniversities()
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var sql = "SELECT UniName FROM Universities";
+                using (var command = new SqlCommand(sql, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var universities = new List<string>();
+                    while (await reader.ReadAsync())
+                    {
+                        universities.Add(reader.GetString(0));
+                    }
+                    return Ok(universities);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred: {ex.Message}");
+        }
+    }
 }
