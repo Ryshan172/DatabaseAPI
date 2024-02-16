@@ -3,20 +3,19 @@ using System;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
-// Controller for Inserting Values in the Departments Table 
 [Route("api/[controller]")]
 [ApiController]
-public class DepartmentsController : ControllerBase
+public class UniversitiesController : ControllerBase
 {
     private readonly string _connectionString;
 
-    public DepartmentsController(IConfiguration configuration)
+    public UniversitiesController(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddDepartment([FromBody] DepartmentModel departmentModel)
+    public async Task<IActionResult> AddUniversity([FromBody] UniversitiesModel universitiesModel)
     {
         if (!ModelState.IsValid)
         {
@@ -29,15 +28,15 @@ public class DepartmentsController : ControllerBase
             {
                 await connection.OpenAsync();
 
-                var sql = "INSERT INTO Departments (Department) VALUES (@Department)";
+                var sql = "INSERT INTO Universities (UniName) VALUES (@UniName)";
                 using (var command = new SqlCommand(sql, connection))
                 {
-                    command.Parameters.AddWithValue("@Department", departmentModel.Department);
+                    command.Parameters.AddWithValue("@UniName", universitiesModel.UniName);
                     await command.ExecuteNonQueryAsync();
                 }
             }
 
-            return Ok("Department added successfully");
+            return Ok("University added successfully");
         }
         catch (Exception ex)
         {
