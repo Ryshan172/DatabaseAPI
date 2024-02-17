@@ -32,6 +32,7 @@ namespace DatabaseApi
             services.AddScoped<BursaryAllocationController>();
             services.AddScoped<UserController>();
             services.AddScoped<UserContactController>();
+            services.AddScoped<ErrorController>();
         }
 
         // Configure the HTTP request pipeline.

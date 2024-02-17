@@ -7,7 +7,8 @@ namespace DatabaseApi.Controllers
 {    
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController  : ControllerBase{
+    public class UserController  : ControllerBase
+    {
 
         private readonly string _connectionString;
 
@@ -53,43 +54,41 @@ namespace DatabaseApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
         public  List<UserModel> GetUsers()
         {
-                List<UserModel> users = new List<UserModel>();
+            List<UserModel> users = new List<UserModel>();
 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT UserID, FirstName, LastName FROM Users";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                try
                 {
-                    string query = "SELECT UserID, FirstName, LastName FROM Users";
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                    SqlCommand command = new SqlCommand(query, connection);
-
-                    try
+                    while (reader.Read())
                     {
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
+                        UserModel user = new UserModel
                         {
-                            UserModel user = new UserModel
-                            {
-                                UserID = reader.GetInt32(0),
-                                FirstName = reader.GetString(1),
-                                LastName = reader.GetString(2),
-                            };
+                            UserID = reader.GetInt32(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                        };
 
-                            users.Add(user);
-                        }
+                        users.Add(user);
+                    }
 
-                        reader.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        
-                    }
+                    reader.Close();
                 }
-
-                return users;
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    
+                }
             }
 
-
+            return users;
+        }
     }
 }
