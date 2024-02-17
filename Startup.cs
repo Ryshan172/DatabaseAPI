@@ -34,6 +34,7 @@ public class Startup
         services.AddScoped<BursaryAllocationController>();
         services.AddScoped<UserController>();
         services.AddScoped<UserContactController>();
+        services.AddScoped<BbdSpendingsController>();
     }
 
     // Configure the HTTP request pipeline.

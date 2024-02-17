@@ -17,7 +17,7 @@ public class UserContactController {
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserContactModel>), 200)]
          public List<UserContactModel> GetContacts()
         {
             List<UserContactModel> contactdetails = new List<UserContactModel>();
