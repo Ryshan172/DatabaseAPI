@@ -7,7 +7,31 @@ namespace DatabaseApi
     {
         public Startup(IConfiguration configuration)
         {
+<<<<<<< HEAD
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bursary Database API", Version = "v1" });
+        });
+        
+        // Registering Different Controllers with Dependency Injection (DI)
+        services.AddScoped<DepartmentsController>();
+        services.AddScoped<UniversitiesController>();
+        services.AddScoped<StudentsController>();
+        services.AddScoped<StudentsAllocController>();
+        services.AddScoped<UniAppController>();
+        services.AddScoped<BursaryAllocationController>();
+        services.AddScoped<UserController>();
+        services.AddScoped<UserContactController>();
+        services.AddScoped<BbdSpendingsController>();
+    }
+
+    // Configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+=======
             Configuration = configuration;
+>>>>>>> 4e6a5a1d5c66097ba112c370d09df1295f54ea80
         }
 
         public IConfiguration Configuration { get; }
