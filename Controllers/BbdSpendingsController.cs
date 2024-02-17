@@ -1,34 +1,40 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-// using System.Web.Http;
-using DatabaseApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
-// using Microsoft.AspNetCore.Mvc; 
-
 
 [ApiController]
 [Route("api/[controller]")]
 public class BbdSpendingsController : ControllerBase
 {
-
-
-    
     private readonly string _connectionString;
 
     public BbdSpendingsController(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
-    
-    [HttpGet]
-    public IActionResult GetAllocatedAmountTotal(int allocationYear)
-    {
-        string query = "SELECT SUM(AmountAlloc) AS TotalAmountAlloc FROM BursaryAllocations WHERE AllocationYear = @AllocationYear";
 
-        decimal totalAllocatedAmount = 0;
+    [HttpGet]
+    public IActionResult GetAllocatedAmountAndUniversities(int allocationYear)
+    {
+        string query = @"
+            SELECT 
+                SUM(B.AmountAlloc) AS TotalAmountAlloc,
+                U.UniName
+            FROM 
+                BursaryAllocations B
+            INNER JOIN 
+                Universities U ON B.UniversityID = U.UniversityID
+            WHERE 
+                B.AllocationYear = @AllocationYear
+            GROUP BY 
+                U.UniName";
+
+        decimal totalAmountAllocated = 0;
+        Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
 
         using (SqlConnection connection = new SqlConnection(_connectionString))
         {
@@ -38,15 +44,20 @@ public class BbdSpendingsController : ControllerBase
 
                 connection.Open();
 
-                object result = command.ExecuteScalar();
-
-                if (result != null && result != DBNull.Value)
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    totalAllocatedAmount = Convert.ToDecimal(result);
+                    while (reader.Read())
+                    {
+                        string universityName = reader["UniName"].ToString();
+                        decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
+
+                        universityAllocations.Add(universityName, amountAllocated);
+                        totalAmountAllocated += amountAllocated;
+                    }
                 }
             }
         }
 
-        return Ok(new { AllocationYear = allocationYear, TotalAllocatedAmount = totalAllocatedAmount });
+        return Ok(new { AllocationYear = allocationYear, TotalAmountAllocated = totalAmountAllocated, UniversityAllocations = universityAllocations });
     }
 }
