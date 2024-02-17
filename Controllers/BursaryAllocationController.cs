@@ -1,7 +1,9 @@
+
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using DatabaseApi.Models;
 
 [Route("api/[controller]")]
@@ -15,43 +17,62 @@ public class BursaryAllocationController : ControllerBase
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddBursaryAllocation([FromBody] BursaryAllocationModel bursaryallocation)
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<BursaryAllocationModel>), 200)]
+    public List<BursaryAllocationModel> GetBursaryAllocation(int allocationYear)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        List<BursaryAllocationModel> allocations = new List<BursaryAllocationModel>();
 
-        try
+        using (SqlConnection connection = new SqlConnection(_connectionString))
         {
-            using (var connection = new SqlConnection(_connectionString))
+            string query = "SELECT UniversityID, AmountAlloc, AllocationYear FROM BursaryAllocations WHERE AllocationYear = @AllocationYear";
+
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@AllocationYear", allocationYear);
+
+            try
             {
-                await connection.OpenAsync();
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
 
-                var sql = @"
-                    INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear ,UniversityID)
-                    VALUES (@AmountAlloc, @AllocationYear, @UniversityID)";
-                using (var command = new SqlCommand(sql, connection))
+                while (reader.Read())
                 {
-                    command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAllocated);
-                    command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
-                    command.Parameters.AddWithValue("@UniversityID",bursaryallocation.UniversityID);
-                    
-                    await command.ExecuteNonQueryAsync();
+                    BursaryAllocationModel allocation = new BursaryAllocationModel
+                    {
+                        UniversityID = reader.GetInt32(0),
+                        AmountAllocated = reader.GetDecimal(1),
+                        AllocatedYear = reader.GetInt32(2)
+                    };
+
+                    allocations.Add(allocation);
                 }
+
+                reader.Close();
             }
-
-            return Ok("Bursary amount Allocation added successfully");
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"An error occurred: {ex.Message}");
-        }
 
-        /* 
-        See if you can add catches and error messages for specifics. 
-        E.g if User FK error then say "User does not exist"
-        */
+        return allocations;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
