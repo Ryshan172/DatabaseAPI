@@ -1,4 +1,4 @@
-
+using System;
 using DatabaseApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -7,7 +7,7 @@ namespace DatabaseApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserContactController
+    public class UserContactController : ControllerBase
     {
 
         private readonly string _connectionString;
@@ -57,6 +57,39 @@ namespace DatabaseApi.Controllers
             }
 
             return contactdetails;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddContacts([FromBody] UserContactModel userContactModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "INSERT INTO ContactDetails (UserID, Email, PhoneNumber) VALUES (@UserID, @Email, @PhoneNumber)";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserID", userContactModel.UserID);
+                        command.Parameters.AddWithValue("@Email", userContactModel.Email);
+                        command.Parameters.AddWithValue("@PhoneNumber", userContactModel.PhoneNumber);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok("User Contacts added successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }
