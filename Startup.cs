@@ -51,8 +51,8 @@ namespace DatabaseApi
             services.AddScoped<DepartmentsController>();
             services.AddScoped<UniversitiesController>();
             services.AddScoped<StudentsController>();
-            services.AddScoped<StudentsAllocController>();
-            services.AddScoped<UniAppController>();
+            services.AddScoped<StudentsAllocationController>();
+            services.AddScoped<UniversityApplicationController>();
             services.AddScoped<BursaryAllocationController>();
             services.AddScoped<UserController>();
             services.AddScoped<UserContactController>();

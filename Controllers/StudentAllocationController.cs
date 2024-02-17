@@ -7,17 +7,17 @@ namespace DatabaseApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentsAllocController : ControllerBase
+    public class StudentsAllocationController : ControllerBase
     {
         private readonly string _connectionString;
 
-        public StudentsAllocController(IConfiguration configuration)
+        public StudentsAllocationController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddStudent([FromBody] StudentAllocModel studentAllocModel)
+        public async Task<IActionResult> AddStudent([FromBody] StudentAllocationModel StudentAllocationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -35,9 +35,9 @@ namespace DatabaseApi.Controllers
                         VALUES (@Amount, @AllocationYear, @StudentID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@Amount", studentAllocModel.Amount);
-                        command.Parameters.AddWithValue("@AllocationYear", studentAllocModel.AllocationYear);
-                        command.Parameters.AddWithValue("@StudentID", studentAllocModel.StudentID);
+                        command.Parameters.AddWithValue("@Amount", StudentAllocationModel.Amount);
+                        command.Parameters.AddWithValue("@AllocationYear", StudentAllocationModel.AllocationYear);
+                        command.Parameters.AddWithValue("@StudentID", StudentAllocationModel.StudentID);
                         
                         await command.ExecuteNonQueryAsync();
                     }
@@ -69,10 +69,10 @@ namespace DatabaseApi.Controllers
                     using (var command = new SqlCommand(sql, connection))
                     using (var reader = await command.ExecuteReaderAsync())
                     {
-                        var studentAllocations = new List<StudentAllocModel>();
+                        var studentAllocations = new List<StudentAllocationModel>();
                         while (await reader.ReadAsync())
                         {
-                            var studentAllocation = new StudentAllocModel
+                            var studentAllocation = new StudentAllocationModel
                             {   
                                 // Needed to change the model to decimal
                                 Amount = reader.GetDecimal(0),
