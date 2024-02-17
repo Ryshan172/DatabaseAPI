@@ -1,8 +1,11 @@
-public class UniApplicationModel
-{
-    public int ApplicationStatusID { get; set; }
-    public Decimal AmountRequested { get; set; }
-    public int UniversityID {get; set; }
+using System;
 
-    
+namespace DatabaseApi.Models
+{
+    public record UniApplicationModel
+    {
+        public int ApplicationStatusID { get; init; }
+        public int AmountRequested { get; init; }
+        public int UniversityID {get; init; }
+    }
 }
