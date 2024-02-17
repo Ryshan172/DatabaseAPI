@@ -1,66 +1,70 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using DatabaseApi.Controllers;
 
-public class Startup
-{
-    public Startup(IConfiguration configuration)
+namespace DatabaseApi
+{    
+    public class Startup
     {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    // Method gets called by Runtime -> Used to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllers();
-
-        // Register Swagger generator
-        services.AddSwaggerGen(c =>
+        public Startup(IConfiguration configuration)
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bursary Database API", Version = "v1" });
-        });
-        
-        // Registering Different Controllers with Dependency Injection (DI)
-        services.AddScoped<DepartmentsController>();
-        services.AddScoped<UniversitiesController>();
-        services.AddScoped<StudentsController>();
-        services.AddScoped<StudentsAllocController>();
-        services.AddScoped<UniAppController>();
-        services.AddScoped<BursaryAllocationController>();
-        services.AddScoped<UserController>();
-        services.AddScoped<UserContactController>();
-    }
-
-    // Configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
+            Configuration = configuration;
         }
 
-        // Enable middleware to serve generated Swagger as a JSON endpoint.
-        app.UseSwagger();
+        public IConfiguration Configuration { get; }
 
-        // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-        // specifying the Swagger JSON endpoint.
-        app.UseSwaggerUI(c =>
+        // Method gets called by Runtime -> Used to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bursary Database API V1");
-        });
+            services.AddControllers();
 
-        app.UseRouting();
+            // Register Swagger generator
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bursary Database API", Version = "v1" });
+            });
+            
+            // Registering Different Controllers with Dependency Injection (DI)
+            services.AddScoped<DepartmentsController>();
+            services.AddScoped<UniversitiesController>();
+            services.AddScoped<StudentsController>();
+            services.AddScoped<StudentsAllocController>();
+            services.AddScoped<UniAppController>();
+            services.AddScoped<BursaryAllocationController>();
+            services.AddScoped<UserController>();
+            services.AddScoped<UserContactController>();
+            services.AddScoped<ErrorController>();
+        }
 
-        app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
+        // Configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            endpoints.MapControllers();
-        });
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bursary Database API V1");
+            });
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
     }
 }

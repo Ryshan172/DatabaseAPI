@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace DatabaseApi.Models{
-    
-    public class BursaryAllocationModel{
+namespace DatabaseApi.Models
+{  
+    public class BursaryAllocationModel
+    {
 
         public int ApplicationID{get; set;}
         public int UniversityID{get;set;}

@@ -2,12 +2,13 @@
 using DatabaseApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
 
-
-[ApiController]
-[Route("api/[controller]")]
-public class UserContactController {
+namespace DatabaseApi.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserContactController
+    {
 
         private readonly string _connectionString;
 
@@ -18,7 +19,7 @@ public class UserContactController {
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
-         public List<UserContactModel> GetContacts()
+        public List<UserContactModel> GetContacts()
         {
             List<UserContactModel> contactdetails = new List<UserContactModel>();
 
@@ -58,3 +59,4 @@ public class UserContactController {
             return contactdetails;
         }
     }
+}

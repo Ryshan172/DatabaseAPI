@@ -1,28 +1,59 @@
-
+using System;
 using DatabaseApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
 
-
-
-
-
-[ApiController]
-[Route("api/[controller]")]
-public class UserController  : ControllerBase{
-
-    private readonly string _connectionString;
-
-    public UserController(IConfiguration configuration)
+namespace DatabaseApi.Controllers
+{    
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController  : ControllerBase
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
 
-    [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
-    public  List<UserModel> GetUsers()
-    {
+        private readonly string _connectionString;
+
+        public UserController(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser([FromBody] UserModel userModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "INSERT INTO Users (FirstName, LastName, RoleID) VALUES (@FirstName, @LastName, @RoleID)";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@FirstName", userModel.FirstName);
+                        command.Parameters.AddWithValue("@LastName", userModel.LastName);
+                        command.Parameters.AddWithValue("@RoleID", userModel.RoleID);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok("University added successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
+        public  List<UserModel> GetUsers()
+        {
             List<UserModel> users = new List<UserModel>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -43,8 +74,6 @@ public class UserController  : ControllerBase{
                             UserID = reader.GetInt32(0),
                             FirstName = reader.GetString(1),
                             LastName = reader.GetString(2),
-                           
-
                         };
 
                         users.Add(user);
@@ -61,6 +90,5 @@ public class UserController  : ControllerBase{
 
             return users;
         }
-
-
+    }
 }

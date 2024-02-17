@@ -1,7 +1,10 @@
-public class UniversitiesModel
-{
-    public int UniversityID { get; set; }
-    public string UniName { get; set; }
+using System;
 
-    
+namespace DatabaseApi.Models
+{
+    public record UniversitiesModel
+    {
+        public int UniversityID { get; init; }
+        public string UniName { get; init; }
+    }
 }
