@@ -160,7 +160,9 @@ CREATE TABLE [dbo].[StudentAllocations](
     AllocationID int PRIMARY KEY  identity(1,1),
     Amount money NOT NULL,
     AllocationYear INT,
-    StudentID int REFERENCES [dbo].StudentsTable(StudentID)
+    StudentID int REFERENCES [dbo].StudentsTable(StudentID),
+    ApplicationStatusID INT
+    CONSTRAINT FK_StudentAppStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID)
 );
 GO
 
