@@ -31,6 +31,8 @@ public class Startup
         services.AddScoped<StudentsController>();
         services.AddScoped<StudentsAllocController>();
         services.AddScoped<UniAppController>();
+        services.AddScoped<BursaryAllocationController>();
+        services.AddScoped<UserController>();
     }
 
     // Configure the HTTP request pipeline.
