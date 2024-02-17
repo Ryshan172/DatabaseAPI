@@ -1,46 +1,50 @@
-using Microsoft.AspNetCore.Mvc;
 using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
+using DatabaseApi.Models;
 
-[Route("api/[controller]")]
-[ApiController]
-public class UniversitiesController : ControllerBase
+
+namespace DatabaseApi.Controllers
 {
-    private readonly string _connectionString;
-
-    public UniversitiesController(IConfiguration configuration)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UniversitiesController : ControllerBase
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
+        private readonly string _connectionString;
 
-    [HttpPost]
-    public async Task<IActionResult> AddUniversity([FromBody] UniversitiesModel universitiesModel)
-    {
-        if (!ModelState.IsValid)
+        public UniversitiesController(IConfiguration configuration)
         {
-            return BadRequest(ModelState);
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        try
+        [HttpPost]
+        public async Task<IActionResult> AddUniversity([FromBody] UniversitiesModel universitiesModel)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            if (!ModelState.IsValid)
             {
-                await connection.OpenAsync();
-
-                var sql = "INSERT INTO Universities (UniName) VALUES (@UniName)";
-                using (var command = new SqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@UniName", universitiesModel.UniName);
-                    await command.ExecuteNonQueryAsync();
-                }
+                return BadRequest(ModelState);
             }
 
-            return Ok("University added successfully");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"An error occurred: {ex.Message}");
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "INSERT INTO Universities (UniName) VALUES (@UniName)";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@UniName", universitiesModel.UniName);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok("University added successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

@@ -1,10 +1,13 @@
-namespace DatabaseApi.Models{
+using System;
 
-    public class UserContactModel{
+namespace DatabaseApi.Models
+{
 
-        public int ContactID{get;set;}
-        public int UserID{get;set;}
-        public string Email{get;set;}
-        public string PhoneNumber{get;set;}
+    public record UserContactModel
+    {
+        public int ContactID{ get; init; }
+        public int UserID{ get; init; }
+        public string Email{ get; init;}
+        public string PhoneNumber{ get; init; }
     }
 }

@@ -1,47 +1,49 @@
-using Microsoft.AspNetCore.Mvc;
 using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
+using DatabaseApi.Models;
 
-// Controller for Inserting Values in the Departments Table 
-[Route("api/[controller]")]
-[ApiController]
-public class DepartmentsController : ControllerBase
-{
-    private readonly string _connectionString;
-
-    public DepartmentsController(IConfiguration configuration)
+namespace DatabaseApi.Controllers
+{    // Controller for Inserting Values in the Departments Table 
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DepartmentsController : ControllerBase
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
+        private readonly string _connectionString;
 
-    [HttpPost]
-    public async Task<IActionResult> AddDepartment([FromBody] DepartmentModel departmentModel)
-    {
-        if (!ModelState.IsValid)
+        public DepartmentsController(IConfiguration configuration)
         {
-            return BadRequest(ModelState);
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        try
+        [HttpPost]
+        public async Task<IActionResult> AddDepartment([FromBody] DepartmentModel departmentModel)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            if (!ModelState.IsValid)
             {
-                await connection.OpenAsync();
-
-                var sql = "INSERT INTO Departments (Department) VALUES (@Department)";
-                using (var command = new SqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Department", departmentModel.Department);
-                    await command.ExecuteNonQueryAsync();
-                }
+                return BadRequest(ModelState);
             }
 
-            return Ok("Department added successfully");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"An error occurred: {ex.Message}");
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "INSERT INTO Departments (Department) VALUES (@Department)";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@Department", departmentModel.Department);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok("Department added successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }
