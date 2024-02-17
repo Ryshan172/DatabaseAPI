@@ -41,7 +41,7 @@ namespace DatabaseApi.Controllers
                     }
                 }
 
-                return Ok("University added successfully");
+                return Ok("User added successfully");
             }
             catch (Exception ex)
             {
