@@ -1,8 +1,6 @@
 
 using DatabaseApi.Models;
-
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -23,13 +21,13 @@ public class UserController  : ControllerBase{
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
-    public List<UserModel> GetUsers()
-        {
+    public  List<UserModel> GetUsers()
+    {
             List<UserModel> users = new List<UserModel>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT UserID, FirstName, LastName RoleID FROM Users";
+                string query = "SELECT UserID, FirstName, LastName FROM Users";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -45,7 +43,7 @@ public class UserController  : ControllerBase{
                             UserID = reader.GetInt32(0),
                             FirstName = reader.GetString(1),
                             LastName = reader.GetString(2),
-                            RoleID = reader.GetInt32(3)
+                           
 
                         };
 

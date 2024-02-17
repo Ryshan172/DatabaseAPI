@@ -33,6 +33,7 @@ public class Startup
         services.AddScoped<UniAppController>();
         services.AddScoped<BursaryAllocationController>();
         services.AddScoped<UserController>();
+        services.AddScoped<UserContactController>();
     }
 
     // Configure the HTTP request pipeline.

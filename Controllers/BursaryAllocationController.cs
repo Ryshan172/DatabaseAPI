@@ -30,13 +30,13 @@ public class BursaryAllocationController : ControllerBase
                 await connection.OpenAsync();
 
                 var sql = @"
-                    INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear)
-                    VALUES (@AmountAlloc, @AllocationYear)";
+                    INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear ,UniversityID)
+                    VALUES (@AmountAlloc, @AllocationYear, @UniversityID)";
                 using (var command = new SqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAllocated);
                     command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
-
+                    command.Parameters.AddWithValue("@UniversityID",bursaryallocation.UniversityID);
                     
                     await command.ExecuteNonQueryAsync();
                 }
