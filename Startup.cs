@@ -29,10 +29,11 @@ namespace DatabaseApi
             services.AddScoped<StudentsController>();
             services.AddScoped<StudentsAllocationController>();
             services.AddScoped<UniversityApplicationController>();
-            services.AddScoped<BursaryAllocationController>();
+            // services.AddScoped<BursaryAllocationController>();
             services.AddScoped<UserController>();
             services.AddScoped<UserContactController>();
             services.AddScoped<ErrorController>();
+            services.AddScoped<UniversitySpendingsController>();
            
         }
 
