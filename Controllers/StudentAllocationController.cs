@@ -66,7 +66,7 @@ namespace DatabaseApi.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT Amount, AllocationYear, StudentID, ApplicationStatusID FROM StudentAllocations";
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentID, ApplicationStatusID FROM StudentAllocations";
                     using (var command = new SqlCommand(sql, connection))
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -76,10 +76,11 @@ namespace DatabaseApi.Controllers
                             var studentAllocation = new StudentAllocationModel
                             {   
                                 // Needed to change the model to decimal
-                                Amount = reader.GetDecimal(0),
-                                AllocationYear = reader.GetInt32(1),
-                                StudentID = reader.GetInt32(2),
-                                ApplicationStatusID = reader.GetInt32(3)
+                                AllocationID = reader.GetInt32(0),
+                                Amount = reader.GetDecimal(1),
+                                AllocationYear = reader.GetInt32(2),
+                                StudentID = reader.GetInt32(3),
+                                ApplicationStatusID = reader.GetInt32(4)
                             };
                             studentAllocations.Add(studentAllocation);
                         }
