@@ -50,4 +50,40 @@ public class UniAppController : ControllerBase
         }
 
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllUniversityApplications()
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var sql = "SELECT ApplicationStatusID, AmountRequested, UniversityID FROM UniversityApplication";
+                using (var command = new SqlCommand(sql, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var universityApplications = new List<UniApplicationModel>();
+                    while (await reader.ReadAsync())
+                    {
+                        var uniApplication = new UniApplicationModel
+                        {
+                            ApplicationStatusID = reader.GetInt32(0),
+                            // Changed model to Decimal
+                            AmountRequested = reader.GetDecimal(1),
+                            UniversityID = reader.GetInt32(2)
+                        };
+                        universityApplications.Add(uniApplication);
+                    }
+                    return Ok(universityApplications);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred: {ex.Message}");
+        }
+    }
+
 }
