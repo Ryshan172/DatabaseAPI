@@ -58,7 +58,7 @@ namespace DatabaseApi.Controllers
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT UserID, FirstName, LastName FROM Users";
+                string query = "SELECT UserID, FirstName, LastName, RoleID FROM Users";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -74,6 +74,7 @@ namespace DatabaseApi.Controllers
                             UserID = reader.GetInt32(0),
                             FirstName = reader.GetString(1),
                             LastName = reader.GetString(2),
+                            RoleID = reader.GetInt32(3)
                         };
 
                         users.Add(user);
