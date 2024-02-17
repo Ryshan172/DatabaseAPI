@@ -45,5 +45,34 @@ namespace DatabaseApi.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllDepartments()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "SELECT Department FROM Departments";
+                    using (var command = new SqlCommand(sql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var departments = new List<string>();
+                        while (await reader.ReadAsync())
+                        {
+                            departments.Add(reader.GetString(0));
+                        }
+                        return Ok(departments);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
+
 }

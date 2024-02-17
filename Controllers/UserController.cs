@@ -30,11 +30,12 @@ namespace DatabaseApi.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "INSERT INTO Users (FirstName, LastName) VALUES (@FirstName, @LastName)";
+                    var sql = "INSERT INTO Users (FirstName, LastName, RoleID) VALUES (@FirstName, @LastName, @RoleID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@FirstName", userModel.FirstName);
-                        command.Parameters.AddWithValue("@FirstName", userModel.LastName);
+                        command.Parameters.AddWithValue("@LastName", userModel.LastName);
+                        command.Parameters.AddWithValue("@RoleID", userModel.RoleID);
                         await command.ExecuteNonQueryAsync();
                     }
                 }

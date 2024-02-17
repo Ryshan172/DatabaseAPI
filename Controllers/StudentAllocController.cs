@@ -55,5 +55,41 @@ namespace DatabaseApi.Controllers
             E.g if User FK error then say "User does not exist"
             */
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllStudentAllocations()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "SELECT Amount, AllocationYear, StudentID FROM StudentAllocations";
+                    using (var command = new SqlCommand(sql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var studentAllocations = new List<StudentAllocModel>();
+                        while (await reader.ReadAsync())
+                        {
+                            var studentAllocation = new StudentAllocModel
+                            {   
+                                // Needed to change the model to decimal
+                                Amount = reader.GetDecimal(0),
+                                AllocationYear = reader.GetInt32(1),
+                                StudentID = reader.GetInt32(2)
+                            };
+                            studentAllocations.Add(studentAllocation);
+                        }
+                        return Ok(studentAllocations);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
+    
 }
