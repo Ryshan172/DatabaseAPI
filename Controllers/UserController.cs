@@ -88,5 +88,52 @@ namespace DatabaseApi.Controllers
 
             return users;
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        public IActionResult GetUserById(int id)
+        {
+            UserModel user = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT UserID, FirstName, LastName, RoleID FROM Users WHERE UserID = @UserID";
+                
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@UserID", id);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        user = new UserModel
+                        {
+                            UserID = reader.GetInt32(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            RoleID = reader.GetInt32(3)
+                        };
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return StatusCode(500, "An error occurred while fetching the user.");
+                }
+            }
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            return Ok(user);
+        }
+
     }
 }
