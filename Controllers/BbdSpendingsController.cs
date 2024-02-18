@@ -34,6 +34,7 @@ public class BbdSpendingsController : ControllerBase
                 U.UniName";
 
         decimal totalAmountAllocated = 0;
+        decimal AmountRemaining = 0;
         Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
 
         using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -53,11 +54,21 @@ public class BbdSpendingsController : ControllerBase
 
                         universityAllocations.Add(universityName, amountAllocated);
                         totalAmountAllocated += amountAllocated;
+                      
                     }
                 }
             }
         }
 
-        return Ok(new { AllocationYear = allocationYear, TotalAmountAllocated = totalAmountAllocated, UniversityAllocations = universityAllocations });
+            decimal amountAllocatedToUniversities = universityAllocations.Values.Sum();
+             AmountRemaining = totalAmountAllocated - amountAllocatedToUniversities;
+
+        return Ok(new {
+             AllocationYear = allocationYear,
+             TotalAmountAllocated = totalAmountAllocated,
+             UniversityAllocations = universityAllocations,
+             AmountRemaining = AmountRemaining,
+               
+             });
     }
 }

@@ -25,7 +25,7 @@ public class UniversitySpendingsController : ControllerBase
         string query = @"
             SELECT 
                 U.UniName,
-                SUM(B.AmountAlloc) AS TotalAmountSpent
+                SUM(B.AmountAlloc) AS TotalAmount
             FROM 
                 Universities U
             INNER JOIN 
@@ -53,8 +53,9 @@ public class UniversitySpendingsController : ControllerBase
                 B.AllocationYear = @AllocationYear AND
                 B.UniversityID = @UniversityID;";
 
-        decimal totalAmountSpent = 0;
-        List<StudentAllocationInfo> fundedStudents = new List<StudentAllocationInfo>();
+        decimal totalAmount = 0;
+        decimal AmountRemaining =0;
+        List<StudentInfoModel> fundedStudents = new List<StudentInfoModel>();
 
         using (SqlConnection connection = new SqlConnection(_connectionString))
         {
@@ -67,26 +68,30 @@ public class UniversitySpendingsController : ControllerBase
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    // Process the first result set (university spendings)
+                    
                     if (reader.Read())
                     {
-                        totalAmountSpent = Convert.ToDecimal(reader["TotalAmountSpent"]);
+                        totalAmount = Convert.ToDecimal(reader["TotalAmount"]);
                     }
 
-                    // Move to the next result set
+                    
                     reader.NextResult();
 
-                    // Process the second result set (student allocation details)
+                   
                     while (reader.Read())
                     {
                         string firstName = reader["FirstName"].ToString();
                         string lastName = reader["LastName"].ToString();
                         decimal allocationAmount = Convert.ToDecimal(reader["AllocationAmount"]);
-                        fundedStudents.Add(new StudentAllocationInfo
+                        AmountRemaining = totalAmount - allocationAmount;
+
+                        fundedStudents.Add(new StudentInfoModel
                         {
                             FirstName = firstName,
                             LastName = lastName,
                             AllocationAmount = allocationAmount
+                            // AmountRemaining = AmountRemaining
+
                         });
                     }
                 }
@@ -97,15 +102,11 @@ public class UniversitySpendingsController : ControllerBase
         {
             AllocationYear = allocationYear,
             UniversityID = universityID,
-            TotalAmountSpent = totalAmountSpent,
-            FundedStudents = fundedStudents
+            TotalAmount = totalAmount,
+            FundedStudents = fundedStudents,
+            amountRemaining =AmountRemaining ,
+
         });
     }
 }
 
-public class StudentAllocationInfo
-{
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public decimal AllocationAmount { get; set; }
-}

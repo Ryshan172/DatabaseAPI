@@ -58,6 +58,45 @@ public class BursaryAllocationController : ControllerBase
 
         return allocations;
     }
+
+
+    [HttpPost]
+    public async Task<IActionResult> AddBursaryAllocation([FromBody] BursaryAllocationModel bursaryallocation)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var sql = @"
+                    INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear, UniversityID)
+                    VALUES (@UniversityID ,@AmountAlloc, @AllocationYear )";
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAllocated);
+                    command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
+                    command.Parameters.AddWithValue("@UniversityID", bursaryallocation. UniversityID);
+
+                    
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return Ok("Bursary amount Allocation added successfully");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred: {ex.Message}");
+        }
+
+
+    }
 }
 
 
