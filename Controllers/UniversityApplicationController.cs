@@ -120,5 +120,50 @@ namespace DatabaseApi.Controllers
             }
 
         }
+
+
+        // Get Application by ID
+        [HttpGet("{applicationId}")]
+        public async Task<IActionResult> GetUniversityApplicationById(int applicationId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID FROM UniversityApplication WHERE ApplicationID = @ApplicationID";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@ApplicationID", applicationId);
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var universityApplication = new UniversityApplicationModel
+                                {
+                                    ApplicationID = reader.GetInt32(0),
+                                    ApplicationStatusID = reader.GetInt32(1),
+                                    // Changed model to Decimal
+                                    AmountRequested = reader.GetDecimal(2),
+                                    UniversityID = reader.GetInt32(3)
+                                };
+                                return Ok(universityApplication);
+                            }
+                            else
+                            {
+                                return NotFound(); // Application with the specified ID not found
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }

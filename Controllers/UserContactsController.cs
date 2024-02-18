@@ -92,5 +92,61 @@ namespace DatabaseApi.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+        
+        
+        // Search for contact details by UserID
+        [HttpGet("{userId}")]
+        [ProducesResponseType(typeof(IEnumerable<UserContactModel>), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetContactsByUserId(int userId)
+        {
+            List<UserContactModel> contactDetails = new List<UserContactModel>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT ContactID, UserID, Email, PhoneNumber FROM ContactDetails WHERE UserID = @UserID";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@UserID", userId);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        UserContactModel contact = new UserContactModel
+                        {
+                            ContactID = reader.GetInt32(0),
+                            UserID = reader.GetInt32(1),
+                            Email = reader.GetString(2),
+                            PhoneNumber = reader.GetString(3)
+                        };
+
+                        contactDetails.Add(contact);
+                    }
+
+                    reader.Close();
+
+                    if (contactDetails.Count > 0)
+                    {
+                        return Ok(contactDetails);
+                    }
+                    else
+                    {
+                        return NotFound(); // No contacts found for the specified user ID
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return StatusCode(500, "An error occurred while processing the request.");
+                }
+            }
+        }
+
     }
+
+
+    
 }

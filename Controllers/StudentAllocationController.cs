@@ -135,6 +135,51 @@ namespace DatabaseApi.Controllers
             }
         }
 
+
+        // Search for Student Allocation by ID
+        [HttpGet("{allocationId}")]
+        public async Task<IActionResult> GetStudentAllocationById(int allocationId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentID, ApplicationStatusID FROM StudentAllocations WHERE AllocationID = @AllocationID";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@AllocationID", allocationId);
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var studentAllocation = new StudentAllocationModel
+                                {
+                                    AllocationID = reader.GetInt32(0),
+                                    Amount = reader.GetDecimal(1),
+                                    AllocationYear = reader.GetInt32(2),
+                                    StudentID = reader.GetInt32(3),
+                                    ApplicationStatusID = reader.GetInt32(4)
+                                };
+                                return Ok(studentAllocation);
+                            }
+                            else
+                            {
+                                return NotFound(); // Allocation with the specified ID not found
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
     }
     
 }
