@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-
 namespace DatabaseApi.Models
 {  
     public record BursaryAllocationModel

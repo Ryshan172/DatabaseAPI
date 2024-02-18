@@ -1,6 +1,5 @@
 using Microsoft.OpenApi.Models;
 using DatabaseApi.Controllers;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -8,23 +7,17 @@ namespace DatabaseApi
 {    
 
     public class Startup
-
     {
 
         public Startup(IConfiguration configuration)
-
         {
             Configuration = configuration;
         }
 
-
         public IConfiguration Configuration { get; }
 
-
         // Method gets called by Runtime -> Used to add services to the container.
-
         public void ConfigureServices(IServiceCollection services)
-
         {
             services.AddControllers().AddNewtonsoftJson();
 
@@ -59,9 +52,7 @@ namespace DatabaseApi
         }
 
         // Configure the HTTP request pipeline.
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-
         {
             if (env.IsDevelopment())
             {

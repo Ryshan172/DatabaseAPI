@@ -1,5 +1,3 @@
-using System;
-
 namespace DatabaseApi.Models
 {
     public record DepartmentModel

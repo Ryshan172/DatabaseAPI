@@ -1,5 +1,3 @@
-using System;
-
 namespace DatabaseApi.Models
 {
     public class StudentModel : UserModel
