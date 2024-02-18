@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -12,6 +11,7 @@ namespace DatabaseApi.Controllers
         [HttpPost("/error")]
         [HttpGet("/error")]
         public IActionResult Error()
+
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
             var stackTrace = context.Error.StackTrace;

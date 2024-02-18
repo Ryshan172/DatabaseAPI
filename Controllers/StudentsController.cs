@@ -12,10 +12,12 @@ namespace DatabaseApi.Controllers
     {
         private readonly string _connectionString;
 
+
         public StudentsController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddStudent([FromBody] StudentModel studentModel)

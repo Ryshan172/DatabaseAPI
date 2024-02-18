@@ -1,74 +1,65 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 
-[ApiController]
-[Route("api/[controller]")]
-public class BbdSpendingsController : ControllerBase
+
+namespace DatabaseApi.Controllers
 {
-    private readonly string _connectionString;
+    [ApiController]
+    [Route("api/[controller]")]
 
-    public BbdSpendingsController(IConfiguration configuration)
+    public class BbdSpendingsController : ControllerBase
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
-
-    [HttpGet]
-    public IActionResult GetAllocatedAmountAndUniversities(int allocationYear)
-    {
-        string query = @"
-            SELECT 
-                SUM(B.AmountAlloc) AS TotalAmountAlloc,
-                U.UniName
-            FROM 
-                BursaryAllocations B
-            INNER JOIN 
-                Universities U ON B.UniversityID = U.UniversityID
-            WHERE 
-                B.AllocationYear = @AllocationYear
-            GROUP BY 
-                U.UniName";
-
-        decimal totalAmountAllocated = 0;
-        decimal AmountRemaining = 0;
-        Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
-
-        using (SqlConnection connection = new SqlConnection(_connectionString))
+        private readonly string _connectionString;
+        public BbdSpendingsController(IConfiguration configuration)
         {
-            using (SqlCommand command = new SqlCommand(query, connection))
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+
+        [HttpGet]
+        public IActionResult GetAllocatedAmountAndUniversities(int allocationYear)
+
+        {
+            string query = @"
+                SELECT 
+                    SUM(B.AmountAlloc) AS TotalAmountAlloc,
+                    U.UniName
+                FROM 
+                    BursaryAllocations B
+                INNER JOIN 
+                    Universities U ON B.UniversityID = U.UniversityID
+                WHERE 
+                    B.AllocationYear = @AllocationYear
+                GROUP BY 
+                    U.UniName";
+
+            decimal totalAmountAllocated = 0;
+            Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@AllocationYear", allocationYear);
-
-                connection.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    while (reader.Read())
-                    {
-                        string universityName = reader["UniName"].ToString();
-                        decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
+                    command.Parameters.AddWithValue("@AllocationYear", allocationYear);
 
-                        universityAllocations.Add(universityName, amountAllocated);
-                        totalAmountAllocated += amountAllocated;
-                      
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string universityName = reader["UniName"].ToString();
+                            decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
+
+                            universityAllocations.Add(universityName, amountAllocated);
+                            totalAmountAllocated += amountAllocated;
+                        }
                     }
                 }
             }
+
+            return Ok(new { AllocationYear = allocationYear, TotalAmountAllocated = totalAmountAllocated, UniversityAllocations = universityAllocations });
         }
-
-            decimal amountAllocatedToUniversities = universityAllocations.Values.Sum();
-             AmountRemaining = totalAmountAllocated - amountAllocatedToUniversities;
-
-        return Ok(new {
-             AllocationYear = allocationYear,
-             TotalAmountAllocated = totalAmountAllocated,
-             UniversityAllocations = universityAllocations,
-             AmountRemaining = AmountRemaining,
-               
-             });
     }
 }

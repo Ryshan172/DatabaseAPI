@@ -17,6 +17,7 @@ namespace DatabaseApi.Controllers
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
+
         [HttpPost]
         public async Task<IActionResult> AddUniversity([FromBody] UniversitiesModel universitiesModel)
         {

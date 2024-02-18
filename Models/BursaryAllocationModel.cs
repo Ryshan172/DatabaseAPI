@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DatabaseApi.Models
 {  
-    public class BursaryAllocationModel
-    {
+    public record BursaryAllocationModel
 
-        
-        public int UniversityID{get;set;}
+    {
+        // public int ApplicationID{get; set;}
+        public int UniversityID{ get; init; }
 
         [Required(ErrorMessage = "AmountAllocated is required.")]
-        public decimal AmountAllocated{get;set;}
+        public decimal AmountAllocated{ get; init; }
 
         [Required(ErrorMessage = "AllocatedDate is required.")]
-        public int AllocatedYear{get;set;}
+        public int AllocatedYear{ get; init; }
+
     }
 }

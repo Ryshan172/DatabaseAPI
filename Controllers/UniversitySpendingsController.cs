@@ -1,23 +1,20 @@
-
-
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UniversitySpendingsController : ControllerBase
+
 {
     private readonly string _connectionString;
 
     public UniversitySpendingsController(IConfiguration configuration)
+
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
+
 
     [HttpGet]
     public IActionResult GetUniversitySpendingsAndStudents(int allocationYear, int universityID)

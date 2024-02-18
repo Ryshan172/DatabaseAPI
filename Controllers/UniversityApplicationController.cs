@@ -12,9 +12,11 @@ namespace DatabaseApi.Controllers
         private readonly string _connectionString;
 
         public UniversityApplicationController(IConfiguration configuration)
+
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddDepartment([FromBody] UniversityApplicationModel universityApplicationModel)
