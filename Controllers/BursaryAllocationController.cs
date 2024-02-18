@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
-
 namespace DatabaseApi.Controllers
 {
     [Route("api/[controller]")]

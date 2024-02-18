@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
 namespace DatabaseApi.Controllers
 {    // Controller for Inserting Values in the Departments Table 
     [Route("api/[controller]")]

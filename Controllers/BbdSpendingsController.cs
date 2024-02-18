@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-
-
 namespace DatabaseApi.Controllers
 {
     [ApiController]
