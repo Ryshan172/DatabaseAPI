@@ -1,24 +1,21 @@
-using System;
-using DatabaseApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-
 namespace DatabaseApi.Controllers
 {    
     [ApiController]
     [Route("api/[controller]")]
     public class UserController  : ControllerBase
     {
-
         private readonly string _connectionString;
 
         public UserController(IConfiguration configuration)
+
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
+
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserModel userModel)
+
         {
             if (!ModelState.IsValid)
             {
@@ -49,10 +46,10 @@ namespace DatabaseApi.Controllers
             }
         }
 
-
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
         public  List<UserModel> GetUsers()
+
         {
             List<UserModel> users = new List<UserModel>();
 

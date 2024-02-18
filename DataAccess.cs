@@ -13,7 +13,9 @@ public class DataAccess
      Initializes a new instance of the <see cref="DataAccess"/> class with the specified connection string.
     <param name="connectionString">The connection string to the database. Found in appsettings.json</param>
     */
+
     public DataAccess(string connectionString)
+
     {
         _connectionString = connectionString;
     }
@@ -23,7 +25,9 @@ public class DataAccess
     Returns a task that represents the asynchronous operation. 
     The task result contains the list of roles.
     */ 
+
     public async Task<List<string>> GetRolesAsync()
+
     {
         // Establish a connection to the database
         using (var connection = new SqlConnection(_connectionString))
@@ -54,7 +58,9 @@ public class DataAccess
     // Need to add more methods to retrieve other data 
 
     // GET Method for Universities Table
+
     public async Task<List<string>> GetUniversities()
+
     {
         // Establish a connection to the database
         using (var connection = new SqlConnection(_connectionString))
@@ -80,7 +86,9 @@ public class DataAccess
 
 
     // GET Method for Departments Table
+
     public async Task<List<string>> GetDepartments()
+
     {
         // Establish a connection to the database
         using (var connection = new SqlConnection(_connectionString))
@@ -104,7 +112,9 @@ public class DataAccess
         }
     }
 
+
     public async Task AddDepartmentAsync(string departmentName)
+
     {
         
         try

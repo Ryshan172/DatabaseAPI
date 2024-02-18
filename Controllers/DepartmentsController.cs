@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
 namespace DatabaseApi.Controllers
 {    // Controller for Inserting Values in the Departments Table 
     [Route("api/[controller]")]
@@ -10,7 +5,6 @@ namespace DatabaseApi.Controllers
     public class DepartmentsController : ControllerBase
     {
         private readonly string _connectionString;
-
         public DepartmentsController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -18,6 +12,7 @@ namespace DatabaseApi.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddDepartment([FromBody] DepartmentModel departmentModel)
+
         {
             if (!ModelState.IsValid)
             {

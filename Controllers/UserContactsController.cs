@@ -1,25 +1,26 @@
-using System;
-using DatabaseApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-
 namespace DatabaseApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class UserContactController : ControllerBase
+
     {
 
         private readonly string _connectionString;
 
+
         public UserContactController(IConfiguration configuration)
+
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
+
         public List<UserContactModel> GetContacts()
+
         {
             List<UserContactModel> contactdetails = new List<UserContactModel>();
 

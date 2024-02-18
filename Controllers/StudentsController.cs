@@ -1,9 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
-
 namespace DatabaseApi.Controllers
 {
     [Route("api/[controller]")]
@@ -12,10 +6,12 @@ namespace DatabaseApi.Controllers
     {
         private readonly string _connectionString;
 
+
         public StudentsController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddStudent([FromBody] StudentModel studentModel)

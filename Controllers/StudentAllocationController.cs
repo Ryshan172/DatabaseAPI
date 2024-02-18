@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
 namespace DatabaseApi.Controllers
 {
     [Route("api/[controller]")]
@@ -15,6 +10,7 @@ namespace DatabaseApi.Controllers
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddStudent([FromBody] StudentAllocationModel StudentAllocationModel)
@@ -56,6 +52,7 @@ namespace DatabaseApi.Controllers
             E.g if User FK error then say "User does not exist"
             */
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllStudentAllocations()

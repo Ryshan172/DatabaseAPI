@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using DatabaseApi.Models;
-
 namespace DatabaseApi.Controllers
 {    // Controller for Inserting Values in the University Applications Table 
     [Route("api/[controller]")]
@@ -12,9 +7,11 @@ namespace DatabaseApi.Controllers
         private readonly string _connectionString;
 
         public UniversityApplicationController(IConfiguration configuration)
+
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddDepartment([FromBody] UniversityApplicationModel universityApplicationModel)
