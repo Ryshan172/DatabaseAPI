@@ -18,7 +18,5 @@ namespace DatabaseApi.Models
 
         [Required]
         public int RoleID { get; set; }
-
-    
     }
 }

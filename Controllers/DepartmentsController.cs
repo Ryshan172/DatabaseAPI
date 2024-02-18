@@ -47,9 +47,7 @@ namespace DatabaseApi.Controllers
         }
 
         [HttpGet]
-
         public async Task<IActionResult> GetAllDepartments()
-
         {
             try
             {
