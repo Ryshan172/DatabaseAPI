@@ -203,7 +203,7 @@ namespace DatabaseApiCodeTests
             var resultGet = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
             var resultPost = client.ExecutePostAsync<UserModel>((requestPost)).GetAwaiter().GetResult();
             var resultGetAdded = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
-            
+            var resultGetById = client.GetAsync<UserModel>((requestGetById)).GetAwaiter().GetResult();
 
             // Assert
             Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -215,6 +215,43 @@ namespace DatabaseApiCodeTests
                 Assert.NotNull(user.LastName);
                 Assert.NotNull(user.UserID);
                 Assert.NotNull(user.RoleID);
+            }
+            Assert.IsInstanceOf<UserModel>(resultGetById);
+        }
+
+        [Test]
+        public void GetAndPostUsersContactsTest()
+        {
+
+            // Arrange
+            var requestGet = new RestRequest("api/UsersContacts");
+            var requestPost = new RestRequest("api/UsersContacts");
+            var requestGetById = new RestRequest("api/UsersContacts/{id}").AddUrlSegment("id", 1);
+
+            UserContactModel userContactModel = new()
+            {
+                UserID = 10,
+                Email = "Test@Tests.net",
+                PhoneNumber = "087 000 0000"
+            };
+            requestPost.AddJsonBody(userContactModel);
+
+            // Act
+            var resultGet = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultPost = client.ExecutePostAsync<UserContactModel>((requestPost)).GetAwaiter().GetResult();
+            var resultGetAdded = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
+            
+
+            // Assert
+            Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.NotNull(resultGet);
+            Assert.That(resultGetAdded, Has.Count.EqualTo(resultGet.Count + 1));
+            foreach (UserContactModel userContact in resultGet)
+            {
+                Assert.NotNull(userContact.ContactID);
+                Assert.NotNull(userContact.UserID);
+                Assert.NotNull(userContact.Email);
+                Assert.NotNull(userContact.PhoneNumber);
             }
         }
 
