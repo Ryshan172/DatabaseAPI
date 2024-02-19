@@ -1,28 +1,18 @@
-# Use the official ASP.NET Core runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
+# Use an official Node.js runtime as a base image
+FROM bitnami/dotnet-sdk:latest
 
-# Use the official ASP.NET Core SDK image for building
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy files and restore
+
+# Copy the application code to the container
 COPY . .
-RUN dotnet restore
 
-# Build the application
-WORKDIR /app
-RUN dotnet build -c Release
+# Install app dependencies
+RUN dotnet restore "./DatabaseApiCode.csproj"
 
-# Publish the application
-FROM build AS publish
-RUN dotnet publish -c Release
+# Expose the port that the app will run on
+EXPOSE 3000
 
-# Build the final runtime image
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
-
-# Start the application
-ENTRYPOINT ["dotnet", "./bin/Debug/net8.0/DatabaseApiCode.dll"]
+# Define the command to run your application
+CMD ["dotnet", "run"]

@@ -83,6 +83,7 @@ namespace DatabaseApiCodeTests
             var resultGet = client.GetAsync<List<string>>((requestGet)).GetAwaiter().GetResult();
 
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<string>>(resultGet, "Result is not of type 'List'");
 
         }
 
@@ -98,6 +99,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<StudentAllocationModel>>(resultGet);
         }
 
         [Test]
@@ -112,6 +114,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<StudentAllocationModel>(resultGet);
         }
 
 
@@ -127,6 +130,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<string>>(resultGet);
         }
 
         [Test]
@@ -141,6 +145,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<UniversityApplicationModel>>(resultGet);
         }
 
 
@@ -156,6 +161,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<UniversityApplicationModel>(resultGet);
         }
 
         [Test]
@@ -173,6 +179,7 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet.TotalAmount);
             Assert.NotNull(resultGet.AmountRemaining);
             Assert.NotNull(resultGet.AllocationYear);
+            Assert.IsInstanceOf<UniversitySpendingsModel>(resultGet);
         }
 
         [Test]
@@ -186,22 +193,22 @@ namespace DatabaseApiCodeTests
 
             UserModel userModel = new()
             {
-                FirstName = "This Is",
+                FirstName = "ThisIs",
                 LastName = "Test",
                 RoleID = 2
             };
             requestPost.AddJsonBody(userModel);
 
             // Act
-            var resultPost = client.ExecutePostAsync<UserModel>((requestPost)).GetAwaiter().GetResult();
             var resultGet = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultPost = client.ExecutePostAsync<UserModel>((requestPost)).GetAwaiter().GetResult();
             var resultGetAdded = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
             
 
             // Assert
             Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.NotNull(resultGet);
-            // Assert.That(resultGetAdded.Count, Is.EqualTo(resultGet.Count + 1));
+            Assert.That(resultGetAdded, Has.Count.EqualTo(resultGet.Count + 1));
             foreach (UserModel user in resultGet)
             {
                 Assert.NotNull(user.FirstName);
