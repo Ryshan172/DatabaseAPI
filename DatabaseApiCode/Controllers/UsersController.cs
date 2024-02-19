@@ -1,12 +1,12 @@
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {    
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController  : ControllerBase
+    public class UsersController  : ControllerBase
     {
         private readonly string _connectionString;
 
-        public UserController(IConfiguration configuration)
+        public UsersController(IConfiguration configuration)
 
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");

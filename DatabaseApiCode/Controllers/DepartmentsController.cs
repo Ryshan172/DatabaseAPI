@@ -1,4 +1,4 @@
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {    // Controller for Inserting Values in the Departments Table 
     [Route("api/[controller]")]
     [ApiController]

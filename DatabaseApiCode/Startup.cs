@@ -1,9 +1,9 @@
 using Microsoft.OpenApi.Models;
-using DatabaseApi.Controllers;
+using DatabaseApiCode.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace DatabaseApi
+namespace DatabaseApiCode
 {    
 
     public class Startup
@@ -44,8 +44,8 @@ namespace DatabaseApi
             services.AddScoped<StudentsAllocationController>();
             services.AddScoped<UniversityApplicationController>();
             services.AddScoped<BursaryAllocationController>();
-            services.AddScoped<UserController>();
-            services.AddScoped<UserContactController>();
+            services.AddScoped<UsersController>();
+            services.AddScoped<UsersContactsController>();
             services.AddScoped<ErrorController>();
             
            

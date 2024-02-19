@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : ControllerBase

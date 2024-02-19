@@ -1,4 +1,4 @@
-namespace DatabaseApi.Models
+namespace DatabaseApiCode.Models
 {
     public record StudentAllocationModel 
     {

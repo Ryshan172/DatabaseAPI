@@ -25,4 +25,4 @@ WORKDIR /app
 COPY --from=publish /app .
 
 # Start the application
-ENTRYPOINT ["dotnet", "./bin/Debug/net8.0/DatabaseAPI.dll"]
+ENTRYPOINT ["dotnet", "./bin/Debug/net8.0/DatabaseApiCode.dll"]

@@ -1,4 +1,4 @@
-namespace DatabaseApi
+namespace DatabaseApiCode
 {
 
     public class Program
