@@ -38,7 +38,7 @@ namespace DatabaseApi.Controllers
                         BursaryAllocationModel allocation = new BursaryAllocationModel
                         {
                             UniversityID = reader.GetInt32(0),
-                            AmountAllocated = reader.GetDecimal(1),
+                            AmountAlloc = reader.GetDecimal(1),
                             AllocatedYear = reader.GetInt32(2)
                         };
 
@@ -77,7 +77,7 @@ namespace DatabaseApi.Controllers
                         VALUES (@UniversityID ,@AmountAlloc, @AllocationYear )";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAllocated);
+                        command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAlloc);
                         command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
                         command.Parameters.AddWithValue("@UniversityID", bursaryallocation. UniversityID);
 

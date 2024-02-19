@@ -12,7 +12,7 @@ namespace DatabaseApi.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{allocationYear}")]
         public IActionResult GetAllocatedAmountAndUniversities(int allocationYear)
 
         {
@@ -54,7 +54,11 @@ namespace DatabaseApi.Controllers
                 }
             }
 
-            return Ok(new { AllocationYear = allocationYear, TotalAmountAllocated = totalAmountAllocated, UniversityAllocations = universityAllocations });
+            return Ok(new { 
+                AllocationYear = allocationYear,
+                TotalAmountAllocated = totalAmountAllocated,
+                UniversityAllocations = universityAllocations
+                });
         }
     }
 }

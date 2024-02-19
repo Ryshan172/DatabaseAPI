@@ -9,7 +9,7 @@ namespace DatabaseApi.Models
         public int UniversityID{ get; init; }
 
         [Required(ErrorMessage = "AmountAllocated is required.")]
-        public decimal AmountAllocated{ get; init; }
+        public decimal AmountAlloc{ get; init; }
 
         [Required(ErrorMessage = "AllocatedDate is required.")]
         public int AllocatedYear{ get; init; }

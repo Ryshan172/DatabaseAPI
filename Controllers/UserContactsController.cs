@@ -3,14 +3,14 @@ namespace DatabaseApi.Controllers
     [ApiController]
     [Route("api/[controller]")]
 
-    public class UserContactController : ControllerBase
+    public class UsersContactsController : ControllerBase
 
     {
 
         private readonly string _connectionString;
 
 
-        public UserContactController(IConfiguration configuration)
+        public UsersContactsController(IConfiguration configuration)
 
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
