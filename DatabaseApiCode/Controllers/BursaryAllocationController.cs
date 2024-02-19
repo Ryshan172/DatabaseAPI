@@ -74,12 +74,12 @@ namespace DatabaseApiCode.Controllers
 
                     var sql = @"
                         INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear, UniversityID)
-                        VALUES (@UniversityID ,@AmountAlloc, @AllocationYear )";
+                        VALUES (@AmountAlloc, @AllocationYear, @UniversityID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAlloc);
                         command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
-                        command.Parameters.AddWithValue("@UniversityID", bursaryallocation. UniversityID);
+                        command.Parameters.AddWithValue("@UniversityID", bursaryallocation.UniversityID);
 
                         
                         await command.ExecuteNonQueryAsync();
