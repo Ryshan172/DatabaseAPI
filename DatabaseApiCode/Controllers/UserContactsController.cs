@@ -1,4 +1,4 @@
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

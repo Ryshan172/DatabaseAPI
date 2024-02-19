@@ -1,4 +1,4 @@
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {    // Controller for Inserting Values in the University Applications Table 
     [Route("api/[controller]")]
     [ApiController]

@@ -1,9 +1,9 @@
 using Microsoft.OpenApi.Models;
-using DatabaseApi.Controllers;
+using DatabaseApiCode.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace DatabaseApi
+namespace DatabaseApiCode
 {    
 
     public class Startup

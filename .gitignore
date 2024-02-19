@@ -1,12 +1,1 @@
-# Visual Studio / Rider / ReSharper / etc.
-.vs/
-bin/
-obj/
-
-# Build results
-*.dll
-*.exe
-*.pdb
-*.log
-*.zip
-*.swp
+**/.vs/**

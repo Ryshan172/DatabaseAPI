@@ -1,4 +1,4 @@
-namespace DatabaseApi.Controllers
+namespace DatabaseApiCode.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -93,13 +93,13 @@ namespace DatabaseApi.Controllers
                 }
             }
 
-            return Ok(new
+            return Ok(new UniversitySpendingsModel()
             {
                 AllocationYear = allocationYear,
                 UniversityID = universityID,
                 TotalAmount = totalAmount,
                 FundedStudents = fundedStudents,
-                amountRemaining =AmountRemaining ,
+                AmountRemaining =AmountRemaining ,
 
             });
         }
