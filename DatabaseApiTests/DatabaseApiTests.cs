@@ -1,6 +1,4 @@
 using System.Net;
-using System.Runtime.CompilerServices;
-using DatabaseApiCode.Controllers;
 using DatabaseApiCode.Models;
 using RestSharp;
 
