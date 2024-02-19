@@ -1,5 +1,4 @@
 using System.Net;
-using DatabaseApiCode.Controllers;
 using DatabaseApiCode.Models;
 using RestSharp;
 
@@ -9,11 +8,13 @@ namespace DatabaseApiCodeTests
     {
 
         protected RestClient client;
+
         [SetUp]
         public void Setup()
         {
             client = new RestClient("http://localhost:5286/");
         }
+
 
         [Test]
         public void GetBbdSpendingsTest()
@@ -70,6 +71,7 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet);
         }
 
+
         [Test]
         public void GetDepartmentsTest()
         {
@@ -81,8 +83,10 @@ namespace DatabaseApiCodeTests
             var resultGet = client.GetAsync<List<string>>((requestGet)).GetAwaiter().GetResult();
 
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<string>>(resultGet, "Result is not of type 'List'");
 
         }
+
 
         [Test]
         public void GetStudentAllocationsTest()
@@ -96,7 +100,9 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<StudentAllocationModel>>(resultGet);
         }
+
 
         [Test]
         public void GetStudentAllocationByIdTest()
@@ -110,6 +116,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<StudentAllocationModel>(resultGet);
         }
 
 
@@ -125,7 +132,9 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<string>>(resultGet);
         }
+
 
         [Test]
         public void GetUniversityApplicationTest()
@@ -139,6 +148,7 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<List<UniversityApplicationModel>>(resultGet);
         }
 
 
@@ -154,7 +164,9 @@ namespace DatabaseApiCodeTests
 
             // Assert
             Assert.NotNull(resultGet);
+            Assert.IsInstanceOf<UniversityApplicationModel>(resultGet);
         }
+
 
         [Test]
         public void GetUniversitySpendingsTest()
@@ -171,21 +183,83 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet.TotalAmount);
             Assert.NotNull(resultGet.AmountRemaining);
             Assert.NotNull(resultGet.AllocationYear);
+            Assert.IsInstanceOf<UniversitySpendingsModel>(resultGet);
         }
 
+
         [Test]
-        public void GetUsersTest()
+        public void GetAndPostUsersTest()
         {
 
             // Arrange
-            var requestGet = new RestRequest("api/UniversityApplication");
+            var requestGet = new RestRequest("api/Users");
+            var requestPost = new RestRequest("api/Users");
+            var requestGetById = new RestRequest("api/Users/{id}").AddUrlSegment("id", 1);
+
+            UserModel userModel = new()
+            {
+                FirstName = "ThisIs",
+                LastName = "Test",
+                RoleID = 2
+            };
+            requestPost.AddJsonBody(userModel);
 
             // Act
-            var resultGet = client.GetAsync<object>((requestGet)).GetAwaiter().GetResult();
+            var resultGet = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultPost = client.ExecutePostAsync<UserModel>((requestPost)).GetAwaiter().GetResult();
+            var resultGetAdded = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultGetById = client.GetAsync<UserModel>((requestGetById)).GetAwaiter().GetResult();
 
             // Assert
+            Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.NotNull(resultGet);
-            Assert.Pass();
+            Assert.That(resultGetAdded, Has.Count.EqualTo(resultGet.Count + 1));
+            foreach (UserModel user in resultGet)
+            {
+                Assert.NotNull(user.FirstName);
+                Assert.NotNull(user.LastName);
+                Assert.NotNull(user.UserID);
+                Assert.NotNull(user.RoleID);
+            }
+            Assert.IsInstanceOf<UserModel>(resultGetById);
+        }
+
+
+        [Test]
+        public void GetAndPostUsersContactsTest()
+        {
+
+            // Arrange
+            var requestGet = new RestRequest("api/UsersContacts");
+            var requestPost = new RestRequest("api/UsersContacts");
+            var requestGetById = new RestRequest("api/UsersContacts/{id}").AddUrlSegment("id", 1);
+
+            UserContactModel userContactModel = new()
+            {
+                UserID = 10,
+                Email = "Test@Tests.net",
+                PhoneNumber = "087 000 0000"
+            };
+            requestPost.AddJsonBody(userContactModel);
+
+            // Act
+            var resultGet = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultPost = client.ExecutePostAsync<UserContactModel>((requestPost)).GetAwaiter().GetResult();
+            var resultGetAdded = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultGetById = client.GetAsync<List<UserContactModel>>((requestGetById)).GetAwaiter().GetResult();
+
+            // Assert
+            Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.NotNull(resultGet);
+            Assert.That(resultGetAdded, Has.Count.EqualTo(resultGet.Count + 1));
+            foreach (UserContactModel userContact in resultGet)
+            {
+                Assert.NotNull(userContact.ContactID);
+                Assert.NotNull(userContact.UserID);
+                Assert.NotNull(userContact.Email);
+                Assert.NotNull(userContact.PhoneNumber);
+            }
+            Assert.IsInstanceOf<List<UserContactModel>>(resultGetById);
         }
 
 

@@ -5,9 +5,9 @@ namespace DatabaseApiCode.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : ControllerBase
     {   
+        [HttpGet("/error")]
         [HttpPut("/error")]
         [HttpPost("/error")]
-        [HttpGet("/error")]
         public IActionResult Error()
 
         {

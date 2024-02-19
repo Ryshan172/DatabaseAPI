@@ -1,8 +1,8 @@
-public class StudentInfoModel
+public record StudentInfoModel
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public decimal AllocationAmount { get; set; }
+    public string FirstName { get; init; }
+    public string LastName { get; init; }
+    public decimal AllocationAmount { get; init; }
 
-    public decimal  AmountRemaining{get;set;}
+    public decimal  AmountRemaining{ get; init; }
 }
