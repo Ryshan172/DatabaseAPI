@@ -17,6 +17,7 @@ namespace DatabaseApiCodeTests
             client = new RestClient("http://localhost:5286/");
         }
 
+
         [Test]
         public void GetBbdSpendingsTest()
         {
@@ -72,6 +73,7 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet);
         }
 
+
         [Test]
         public void GetDepartmentsTest()
         {
@@ -87,6 +89,7 @@ namespace DatabaseApiCodeTests
 
         }
 
+
         [Test]
         public void GetStudentAllocationsTest()
         {
@@ -101,6 +104,7 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet);
             Assert.IsInstanceOf<List<StudentAllocationModel>>(resultGet);
         }
+
 
         [Test]
         public void GetStudentAllocationByIdTest()
@@ -133,6 +137,7 @@ namespace DatabaseApiCodeTests
             Assert.IsInstanceOf<List<string>>(resultGet);
         }
 
+
         [Test]
         public void GetUniversityApplicationTest()
         {
@@ -164,6 +169,7 @@ namespace DatabaseApiCodeTests
             Assert.IsInstanceOf<UniversityApplicationModel>(resultGet);
         }
 
+
         [Test]
         public void GetUniversitySpendingsTest()
         {
@@ -181,6 +187,7 @@ namespace DatabaseApiCodeTests
             Assert.NotNull(resultGet.AllocationYear);
             Assert.IsInstanceOf<UniversitySpendingsModel>(resultGet);
         }
+
 
         [Test]
         public void GetAndPostUsersTest()
@@ -219,6 +226,7 @@ namespace DatabaseApiCodeTests
             Assert.IsInstanceOf<UserModel>(resultGetById);
         }
 
+
         [Test]
         public void GetAndPostUsersContactsTest()
         {
@@ -254,6 +262,7 @@ namespace DatabaseApiCodeTests
                 Assert.NotNull(userContact.PhoneNumber);
             }
         }
+
 
         [TearDown]
         public void TearDown()
