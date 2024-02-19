@@ -248,7 +248,7 @@ namespace DatabaseApiCodeTests
             var resultGet = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
             var resultPost = client.ExecutePostAsync<UserContactModel>((requestPost)).GetAwaiter().GetResult();
             var resultGetAdded = client.GetAsync<List<UserContactModel>>((requestGet)).GetAwaiter().GetResult();
-            
+            var resultGetById = client.GetAsync<List<UserContactModel>>((requestGetById)).GetAwaiter().GetResult();
 
             // Assert
             Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -261,6 +261,7 @@ namespace DatabaseApiCodeTests
                 Assert.NotNull(userContact.Email);
                 Assert.NotNull(userContact.PhoneNumber);
             }
+            Assert.IsInstanceOf<List<UserContactModel>>(resultGetById);
         }
 
 
