@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using DatabaseApiCode.Controllers;
 using DatabaseApiCode.Models;
 using RestSharp;
@@ -9,6 +10,7 @@ namespace DatabaseApiCodeTests
     {
 
         protected RestClient client;
+
         [SetUp]
         public void Setup()
         {
@@ -174,20 +176,40 @@ namespace DatabaseApiCodeTests
         }
 
         [Test]
-        public void GetUsersTest()
+        public void GetAndPostUsersTest()
         {
 
             // Arrange
-            var requestGet = new RestRequest("api/UniversityApplication");
+            var requestGet = new RestRequest("api/Users");
+            var requestPost = new RestRequest("api/Users");
+            var requestGetById = new RestRequest("api/Users/{id}").AddUrlSegment("id", 1);
+
+            UserModel userModel = new()
+            {
+                FirstName = "This Is",
+                LastName = "Test",
+                RoleID = 2
+            };
+            requestPost.AddJsonBody(userModel);
 
             // Act
-            var resultGet = client.GetAsync<object>((requestGet)).GetAwaiter().GetResult();
+            var resultPost = client.ExecutePostAsync<UserModel>((requestPost)).GetAwaiter().GetResult();
+            var resultGet = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
+            var resultGetAdded = client.GetAsync<List<UserModel>>((requestGet)).GetAwaiter().GetResult();
+            
 
             // Assert
+            Assert.That(resultPost.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.NotNull(resultGet);
-            Assert.Pass();
+            // Assert.That(resultGetAdded.Count, Is.EqualTo(resultGet.Count + 1));
+            foreach (UserModel user in resultGet)
+            {
+                Assert.NotNull(user.FirstName);
+                Assert.NotNull(user.LastName);
+                Assert.NotNull(user.UserID);
+                Assert.NotNull(user.RoleID);
+            }
         }
-
 
         [TearDown]
         public void TearDown()
