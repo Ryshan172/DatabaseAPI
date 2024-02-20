@@ -1,3 +1,7 @@
+#pragma warning disable CS1591
+#pragma warning disable CS8618
+
+
 public record UniversitySpendingsModel
 {
     public int AllocationYear { get; init; }

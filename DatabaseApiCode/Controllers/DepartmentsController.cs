@@ -1,3 +1,7 @@
+#pragma warning disable CS8618
+#pragma warning disable CS8601
+#pragma warning disable CS1591
+
 namespace DatabaseApiCode.Controllers
 {    // Controller for Inserting Values in the Departments Table 
     [Route("api/[controller]")]

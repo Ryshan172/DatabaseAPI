@@ -1,3 +1,5 @@
+#pragma warning disable CS1591
+
 using Microsoft.OpenApi.Models;
 using DatabaseApiCode.Controllers;
 using System.Reflection;
@@ -76,7 +78,11 @@ namespace DatabaseApiCode
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthorization(
+
+                
+
+            );
 
             app.UseEndpoints(endpoints =>
             {
