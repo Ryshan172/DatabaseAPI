@@ -30,16 +30,6 @@ CREATE TABLE [dbo].Users (
 );
 GO
 
--- Creating Reviewers Table 
-CREATE TABLE [dbo].Reviewers (
-    ReviewerID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
-    UserID INT NOT NULL,
-    StudentAllocationID INT,
-    UniversityID INT,
-    CONSTRAINT FK_ReviewerUser FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
-    CONSTRAINT FK_UniversityID FOREIGN KEY (UniversityID) REFERENCES Universities(UniversityID)
-)
 
 /*Contact Details Table*/
 CREATE TABLE [dbo].ContactDetails (
@@ -132,7 +122,7 @@ BalanceID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
 Budget money,
 AmountRemaining AS (Budget - AmountAllocated),
 AmountAllocated money,
-BudgetYear INT -- Added year for budget 
+BudgetYear INT, -- Added year for budget 
 CONSTRAINT CHK_NonNegativeMoney CHECK (Budget >= 0 AND AmountAllocated >= 0), -- Constraint to prevent negative money values
 CONSTRAINT CHK_BudgetYear CHECK (BudgetYear >= 0)
 );
@@ -184,6 +174,17 @@ CREATE TABLE [dbo].TemporaryLinks (
     LinkUrl NVARCHAR(1000), -- URL for link, 
     ExpiryDate DATE
     
+)
+
+-- Creating Reviewers Table 
+CREATE TABLE [dbo].Reviewers (
+    ReviewerID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
+    UserID INT NOT NULL,
+    StudentAllocationID INT,
+    UniversityID INT,
+    CONSTRAINT FK_ReviewerUser FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
+    CONSTRAINT FK_UniversityID FOREIGN KEY (UniversityID) REFERENCES Universities(UniversityID)
 )
 
 
