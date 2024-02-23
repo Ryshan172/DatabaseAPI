@@ -5,7 +5,7 @@
 #pragma warning disable CS8604
 
 // using DatabaseApiCode.Attributes;
-
+// 
 namespace DatabaseApiCode.Controllers
 {   
     [ApiController]
@@ -70,52 +70,88 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Need to check Validation for year actually existing. 
-        // Come back to this because needs to check Bursary Allocations Table 
-        [HttpGet("budget/{budgetYear}")]
-        public IActionResult GetAllocatedAmountAndRemaining(int budgetYear)
+        // Add Money to the BBD Budget Table 
+        [HttpPost]
+        public async Task<IActionResult> AddBudgetAmount([FromBody] BBDBudgetModel bBDBudgetModell)
         {
-            string query = @"
-                SELECT 
-                    SUM(B.AmountAllocated) AS TotalAmountAllocated,
-                    SUM(B.AmountRemaining) AS TotalAmountRemaining
-                FROM 
-                    BBDAdminBalance B
-                WHERE 
-                    B.BudgetYear = @BudgetYear";
-
-            decimal totalAmountAllocated = 0;
-            decimal totalAmountRemaining = 0;
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            if (!ModelState.IsValid)
             {
-                using (SqlCommand command = new SqlCommand(query, connection))
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@BudgetYear", budgetYear);
+                    await connection.OpenAsync();
 
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    var sql = @"
+                        INSERT INTO BBDAdminBalance (Budget, AmountAllocated, BudgetYear)
+                        VALUES (@Budget, @AmountAllocated, @BudgetYear)";
+                    using (var command = new SqlCommand(sql, connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@Budget", bBDBudgetModell.Budget);
+                        command.Parameters.AddWithValue("@AmountAllocated", bBDBudgetModell.AmountAllocated);
+                        command.Parameters.AddWithValue("@BudgetYear", bBDBudgetModell.BudgetYear);
+                        
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok("Budget for year added successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
+            
+        }
+
+
+        // Method to update the budget for a year
+        [HttpPut("{budgetYear}")]
+        public async Task<IActionResult> UpdateBudgetAmount(int budgetYear, [FromBody] BBDBudgetModel bBDBudgetModell)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = @"
+                        UPDATE BBDAdminBalance
+                        SET Budget = @Budget,
+                            AmountAllocated = @AmountAllocated
+                        WHERE BudgetYear = @BudgetYear";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@Budget", bBDBudgetModell.Budget);
+                        command.Parameters.AddWithValue("@AmountAllocated", bBDBudgetModell.AmountAllocated);
+                        command.Parameters.AddWithValue("@BudgetYear", budgetYear); // Use the route parameter
+
+                        var rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
                         {
-                            totalAmountAllocated = Convert.ToDecimal(reader["TotalAmountAllocated"]);
-                            totalAmountRemaining = Convert.ToDecimal(reader["TotalAmountRemaining"]);
-                        }
-                        else {
-                            // No budget for specified year
-                            return NotFound("No budget for specified year");
+                            return NotFound($"Budget for year {budgetYear} does not exist");
                         }
                     }
                 }
-            }
 
-            return Ok(new { 
-                BudgetYear = budgetYear,
-                TotalAmountAllocated = totalAmountAllocated,
-                TotalAmountRemaining = totalAmountRemaining
-            });
+                return Ok($"Budget for year {budgetYear} updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
+
 
     }
 }

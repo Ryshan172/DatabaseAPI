@@ -46,7 +46,7 @@ namespace DatabaseApiCode.Controllers
                 INNER JOIN 
                     StudentsTable S ON U.UserID = S.UserID
                 INNER JOIN 
-                    StudentAllocations SA ON S.StudentID = SA.StudentID
+                    StudentAllocations SA ON S.StudentIDNum = SA.StudentIDNum
                 INNER JOIN 
                     BursaryAllocations B ON SA.AllocationID = B.AllocationID
                 WHERE 
