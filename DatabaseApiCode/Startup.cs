@@ -49,6 +49,7 @@ namespace DatabaseApiCode
             services.AddScoped<UsersController>();
             services.AddScoped<UsersContactsController>();
             services.AddScoped<ErrorController>();
+            services.AddScoped<DocumentsController>();
             
            
         }

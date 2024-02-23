@@ -31,13 +31,14 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        INSERT INTO StudentAllocations (Amount, AllocationYear, StudentID, ApplicationStatusID)
-                        VALUES (@Amount, @AllocationYear, @StudentID, @ApplicationStatusID)";
+                        INSERT INTO StudentAllocations (Amount, AllocationYear, StudentIDNum, StudentMarks, ApplicationStatusID)
+                        VALUES (@Amount, @AllocationYear, @StudentIDNum, @StudentMarks, @ApplicationStatusID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@Amount", StudentAllocationModel.Amount);
                         command.Parameters.AddWithValue("@AllocationYear", StudentAllocationModel.AllocationYear);
-                        command.Parameters.AddWithValue("@StudentID", StudentAllocationModel.StudentID);
+                        command.Parameters.AddWithValue("@StudentIDNum", StudentAllocationModel.StudentIDNum);
+                        command.Parameters.AddWithValue("@StudentMarks", StudentAllocationModel.StudentMarks);
                         command.Parameters.AddWithValue("@ApplicationStatusID", StudentAllocationModel.ApplicationStatusID);
                         
                         await command.ExecuteNonQueryAsync();
@@ -67,7 +68,7 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentID, ApplicationStatusID FROM StudentAllocations";
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, ApplicationStatusID FROM StudentAllocations";
                     using (var command = new SqlCommand(sql, connection))
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -80,7 +81,7 @@ namespace DatabaseApiCode.Controllers
                                 AllocationID = reader.GetInt32(0),
                                 Amount = reader.GetDecimal(1),
                                 AllocationYear = reader.GetInt32(2),
-                                StudentID = reader.GetInt32(3),
+                                StudentIDNum = reader.GetString(3),
                                 ApplicationStatusID = reader.GetInt32(4)
                             };
                             studentAllocations.Add(studentAllocation);
@@ -97,7 +98,7 @@ namespace DatabaseApiCode.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudentAllocation(int id, [FromBody] StudentAllocationModel studentAllocationModel)
+        public async Task<IActionResult> UpdateStudentAllocation(string id, [FromBody] StudentAllocationModel studentAllocationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -150,7 +151,7 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentID, ApplicationStatusID FROM StudentAllocations WHERE AllocationID = @AllocationID";
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, ApplicationStatusID FROM StudentAllocations WHERE AllocationID = @AllocationID";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@AllocationID", allocationId);
@@ -164,7 +165,7 @@ namespace DatabaseApiCode.Controllers
                                     AllocationID = reader.GetInt32(0),
                                     Amount = reader.GetDecimal(1),
                                     AllocationYear = reader.GetInt32(2),
-                                    StudentID = reader.GetInt32(3),
+                                    StudentIDNum = reader.GetString(3),
                                     ApplicationStatusID = reader.GetInt32(4)
                                 };
                                 return Ok(studentAllocation);

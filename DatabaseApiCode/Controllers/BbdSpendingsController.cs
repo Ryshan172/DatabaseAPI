@@ -68,5 +68,54 @@ namespace DatabaseApiCode.Controllers
                 UniversityAllocations = universityAllocations
                 });
         }
+
+
+        // Need to check Validation for year actually existing. 
+        // Come back to this because needs to check Bursary Allocations Table 
+        [HttpGet("budget/{budgetYear}")]
+        public IActionResult GetAllocatedAmountAndRemaining(int budgetYear)
+        {
+            string query = @"
+                SELECT 
+                    SUM(B.AmountAllocated) AS TotalAmountAllocated,
+                    SUM(B.AmountRemaining) AS TotalAmountRemaining
+                FROM 
+                    BBDAdminBalance B
+                WHERE 
+                    B.BudgetYear = @BudgetYear";
+
+            decimal totalAmountAllocated = 0;
+            decimal totalAmountRemaining = 0;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@BudgetYear", budgetYear);
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            totalAmountAllocated = Convert.ToDecimal(reader["TotalAmountAllocated"]);
+                            totalAmountRemaining = Convert.ToDecimal(reader["TotalAmountRemaining"]);
+                        }
+                        else {
+                            // No budget for specified year
+                            return NotFound("No budget for specified year");
+                        }
+                    }
+                }
+            }
+
+            return Ok(new { 
+                BudgetYear = budgetYear,
+                TotalAmountAllocated = totalAmountAllocated,
+                TotalAmountRemaining = totalAmountRemaining
+            });
+        }
+
     }
 }

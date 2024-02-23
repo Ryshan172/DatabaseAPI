@@ -9,7 +9,9 @@ namespace DatabaseApiCode.Models
 
         public int AllocationYear { get; init; }
 
-        public int StudentID {get; init;}
+        public string StudentIDNum {get; init;}
+
+        public int StudentMarks {get; init;}
         public int ApplicationStatusID {get; init;}
         
     }

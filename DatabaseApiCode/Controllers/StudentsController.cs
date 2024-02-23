@@ -32,11 +32,11 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        INSERT INTO StudentsTable (StudentID, UserID, DateOfBirth, GenderID, EthnicityID, DepartmentID, UniversityID)
-                        VALUES (@StudentID, @UserID, @DateOfBirth, @GenderID, @EthnicityID, @DepartmentID, @UniversityID)";
+                        INSERT INTO StudentsTable (StudentIDNum, UserID, DateOfBirth, GenderID, EthnicityID, DepartmentID, UniversityID)
+                        VALUES (@StudentIDNum, @UserID, @DateOfBirth, @GenderID, @EthnicityID, @DepartmentID, @UniversityID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@StudentID", studentModel.StudentID);
+                        command.Parameters.AddWithValue("@StudentIDNum", studentModel.StudentIDNum);
                         command.Parameters.AddWithValue("@UserID", studentModel.UserID);
                         command.Parameters.AddWithValue("@DateOfBirth", studentModel.DateOfBirth);
                         command.Parameters.AddWithValue("@GenderID", studentModel.GenderID);
