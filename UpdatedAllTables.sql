@@ -8,25 +8,11 @@ GO
 USE BursaryDatabase
 GO
 
-CREATE FUNCTION dbo.CalculateAge
-(
-    @DateOfBirth date
-)
-RETURNS INT
-AS
-BEGIN
-    DECLARE @Result INT;
-
-    SET @Result = DATEDIFF(day,@DateOfBirth,CAST (GETDATE() AS DATE ))
-
-    RETURN @Result/365.25;
-END;
-GO
 
 /*Updated Roles Table*/
 -- Creating Roles Table 
 CREATE TABLE [dbo].Roles (
-RoleID int PRIMARY KEY IDENTITY(1,1) ,
+RoleID INT PRIMARY KEY IDENTITY(1,1) ,
 RoleName varchar(10),
 );
 GO
@@ -43,6 +29,17 @@ CREATE TABLE [dbo].Users (
 );
 GO
 
+-- Creating Reviewers Table 
+CREATE TABLE [dbo].Reviewers (
+    ReviewerID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    StudentAllocationID INT,
+    UniversityID INT,
+    CONSTRAINT FK_ReviewerUser FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
+    CONSTRAINT FK_UniversityID FOREIGN KEY (UniversityID) REFERENCES Universities(UniversityID)
+)
+
 /*Contact Details Table*/
 CREATE TABLE ContactDetails (
     ContactID INT PRIMARY KEY IDENTITY(1,1),
@@ -54,7 +51,7 @@ CREATE TABLE ContactDetails (
 
 /*Added Ethnicity, Dept and Genders tables*/
 CREATE TABLE [dbo].Ethnicity(
-EthnicityID int PRIMARY KEY IDENTITY(1,1) ,
+EthnicityID INT PRIMARY KEY IDENTITY(1,1) ,
 Ethnicity VARCHAR(8)
 );
 GO
@@ -62,7 +59,7 @@ INSERT INTO dbo.Ethnicity(Ethnicity) VALUES ('African'),('Indian'),('Colored')
 GO
 
 CREATE TABLE [dbo].Genders(
-GenderID int PRIMARY KEY IDENTITY(1,1) ,
+GenderID INT PRIMARY KEY IDENTITY(1,1) ,
 Gender VARCHAR(6)
 );
 GO
@@ -70,7 +67,7 @@ INSERT INTO dbo.Genders(Gender) VALUES ('Female'),('Male')
 
 
 CREATE TABLE [dbo].Departments(
-DepartmentID int PRIMARY KEY IDENTITY(1,1) ,
+DepartmentID INT PRIMARY KEY IDENTITY(1,1) ,
 Department varchar(7)
 );
 GO
@@ -88,9 +85,9 @@ INSERT INTO dbo.Universities (UniName, DepartmentID, UserID) VALUES ('Wits', 1, 
 */
 
 CREATE TABLE [dbo].[UniversityUser] (
-    DepartmentID int REFERENCES [dbo].Departments(DepartmentID) ,
-    UniversityID int REFERENCES [dbo].Universities(UniversityID) ,
-    UserID int REFERENCES Users (UserID)
+    DepartmentID INT REFERENCES [dbo].Departments(DepartmentID) ,
+    UniversityID INT REFERENCES [dbo].Universities(UniversityID) ,
+    UserID INT REFERENCES Users (UserID)
 );
 GO
 
@@ -112,6 +109,7 @@ CREATE TABLE [dbo].[UniversityApplication] (
     ApplicationStatusID INT,
     AmountRequested money,
     UniversityID INT REFERENCES Universities(UniversityID),
+    IsLocked BIT NOT NULL DEFAULT 0, -- Adding IsLocked field, Default 0 = false
     CONSTRAINT FK_ApplicationStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID)
 );
 
@@ -129,10 +127,11 @@ GO
 
 -- Creating BBDAdminBalance Table
 CREATE TABLE [dbo].BBDAdminBalance(
-BalanceID int PRIMARY KEY IDENTITY(1,1),
+BalanceID INT PRIMARY KEY IDENTITY(1,1),
 Budget money,
 AmountRemaining AS (Budget - AmountAllocated),
-AmountAllocated money
+AmountAllocated money,
+BudgetYear INT -- Added year for budget 
 );
 GO
 
@@ -144,23 +143,24 @@ GO
 -- Creating Students Table
 CREATE TABLE [dbo].StudentsTable(
 	 -- Remove IDENTITY property. Can not manually enter ID 
-    StudentID int PRIMARY KEY,
-    UserID int NOT NULL,
+    StudentIDNum CHAR(13) PRIMARY KEY -- StudentID as char of size 13
+    UserID INT NOT NULL,
     DateOfBirth date NOT NULL,
     GenderID INT REFERENCES Genders(GenderID), -- Assuming Genders table exists
-    EthnicityID int REFERENCES [dbo].Ethnicity(EthnicityID),
-    DepartmentID int REFERENCES [dbo].Departments(DepartmentID) ,
-    UniversityID int REFERENCES [dbo].Universities(UniversityID), -- New column
+    EthnicityID INT REFERENCES [dbo].Ethnicity(EthnicityID),
+    DepartmentID INT REFERENCES [dbo].Departments(DepartmentID) ,
+    UniversityID INT REFERENCES [dbo].Universities(UniversityID), -- New column
     CONSTRAINT FK_StudentUser FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 
 -- Creating Student Allocations Table
 CREATE TABLE [dbo].[StudentAllocations](
-    AllocationID int PRIMARY KEY  identity(1,1),
+    AllocationID INT PRIMARY KEY  identity(1,1),
     Amount money NOT NULL,
     AllocationYear INT,
-    StudentID int REFERENCES [dbo].StudentsTable(StudentID),
+    StudentIDNum CHAR(13) REFERENCES [dbo].StudentsTable(StudentIDNum),
+    StudentMarks INT, 
     ApplicationStatusID INT
     CONSTRAINT FK_StudentAppStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID)
 );
@@ -168,12 +168,20 @@ GO
 
 -- Creating Student Documents Table
 CREATE TABLE [dbo].Documents (
-    CV VARBINARY(1000),
-    ID VARBINARY(1000),
-    AcademicTranscript VARBINARY(1000),
-    StudentID int REFERENCES [dbo].StudentsTable(StudentID)
+    ID NVARCHAR(1000), -- URL for Document
+    AcademicTranscript NVARCHAR(1000), 
+    StudentIDNum CHAR(13) REFERENCES [dbo].StudentsTable(StudentIDNum)
 );
 GO
+
+CREATE TABLE [dbo].TemporaryLinks (
+    LinkID INT PRIMARY KEY identity(1,1),
+    StudentIDNum CHAR(13) REFERENCES [dbo].StudentsTable(StudentIDNum),
+    LinkUrl NVARCHAR(1000), -- URL for link, 
+    ExpiryDate DATE, 
+    
+)
+
 
 /* 
  SELECT * FROM dbo.Users
