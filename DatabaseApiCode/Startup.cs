@@ -53,6 +53,8 @@ namespace DatabaseApiCode
             services.AddScoped<UniversitySpendingsController>();
             services.AddScoped<LoginController>();
             services.AddScoped<ReviewerController>();
+            services.AddScoped<BbdSpendingsController>();
+
             
            
         }

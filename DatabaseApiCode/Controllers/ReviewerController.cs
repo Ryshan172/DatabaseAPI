@@ -12,6 +12,7 @@ namespace DatabaseApiCode.Controllers
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
+        // Add a new reviewer to a StudentAllocation or UniversityApplication
         [HttpPost]
         public async Task<IActionResult> AddNewReviewer([FromBody] ReviewerModel reviewerModel)
         {
@@ -55,7 +56,7 @@ namespace DatabaseApiCode.Controllers
 
 
 
-
+        // Get Reviewers by different parameters 
         [HttpGet]
         public async Task<IActionResult> GetReviewers(int? userID, int? studentAllocationID, int? universityApplicationID)
         {
@@ -95,7 +96,7 @@ namespace DatabaseApiCode.Controllers
                                     UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
                                     StudentAllocationID = reader.IsDBNull(reader.GetOrdinal("StudentAllocationID")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("StudentAllocationID")),
                                     UniversityApplicationID = reader.IsDBNull(reader.GetOrdinal("UniversityApplicationID")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("UniversityApplicationID"))
-                                    // Populate other properties as needed
+                            
                                 };
 
                                 reviewers.Add(reviewer);

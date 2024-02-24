@@ -21,23 +21,26 @@ namespace DatabaseApiCode.Controllers
 
 
         [HttpGet("{allocationYear}")]
-        public IActionResult GetAllocatedAmountAndUniversities(int allocationYear)
-
+        public IActionResult GetSpendingForYear(int allocationYear)
         {
             string query = @"
                 SELECT 
                     SUM(B.AmountAlloc) AS TotalAmountAlloc,
-                    U.UniName
+                    U.UniName,
+                    BB.Budget AS TotalBudget
                 FROM 
                     BursaryAllocations B
                 INNER JOIN 
                     Universities U ON B.UniversityID = U.UniversityID
+                LEFT JOIN 
+                    BBDAdminBalance BB ON B.AllocationYear = BB.BudgetYear
                 WHERE 
                     B.AllocationYear = @AllocationYear
                 GROUP BY 
-                    U.UniName";
+                    U.UniName, BB.Budget";
 
             decimal totalAmountAllocated = 0;
+            decimal totalBudget = 0;
             Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -55,6 +58,12 @@ namespace DatabaseApiCode.Controllers
                             string universityName = reader["UniName"].ToString();
                             decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
 
+                            // Retrieve budget if available
+                            if (reader["TotalBudget"] != DBNull.Value)
+                            {
+                                totalBudget = Convert.ToDecimal(reader["TotalBudget"]);
+                            }
+
                             universityAllocations.Add(universityName, amountAllocated);
                             totalAmountAllocated += amountAllocated;
                         }
@@ -62,11 +71,14 @@ namespace DatabaseApiCode.Controllers
                 }
             }
 
-            return Ok(new { 
+            return Ok(new
+            {
                 AllocationYear = allocationYear,
                 TotalAmountAllocated = totalAmountAllocated,
+                TotalBudget = totalBudget,
+                AmountRemaining = totalBudget - totalAmountAllocated,
                 UniversityAllocations = universityAllocations
-                });
+            });
         }
 
 
