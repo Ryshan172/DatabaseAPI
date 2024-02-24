@@ -187,8 +187,8 @@ CREATE TABLE [dbo].TemporaryLinks (
 CREATE TABLE [dbo].Reviewers (
     ReviewerID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
     UserID INT REFERENCES Users (UserID),
-    StudentAllocationID INT,
-    UniversityApplicationID INT,
+    StudentAllocationID INT NULL,
+    UniversityApplicationID INT NULL,
     CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
     CONSTRAINT FK_UniversityApplicationID FOREIGN KEY (UniversityApplicationID) REFERENCES UniversityApplication(ApplicationID)
 )

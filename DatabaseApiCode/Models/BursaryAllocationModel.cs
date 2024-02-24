@@ -14,7 +14,7 @@ namespace DatabaseApiCode.Models
         public decimal AmountAlloc { get; init; }
 
         [Required(ErrorMessage = "AllocatedDate is required.")]
-        public int AllocatedYear { get; init; }
+        public int AllocationYear { get; init; }
 
         [Required(ErrorMessage = "UniversityApplication is required.")]
         public int UniversityApplicationID { get; init; }

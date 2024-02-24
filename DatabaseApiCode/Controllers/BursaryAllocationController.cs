@@ -43,8 +43,8 @@ namespace DatabaseApiCode.Controllers
                         {
                             UniversityID = reader.GetInt32(0),
                             AmountAlloc = reader.GetDecimal(1),
-                            AllocatedYear = reader.GetInt32(2),
-                            UniversityApplicationID = reader.GetInt32(4)
+                            AllocationYear = reader.GetInt32(2),
+                            UniversityApplicationID = reader.GetInt32(3)
                         };
 
                         allocations.Add(allocation);
@@ -83,7 +83,7 @@ namespace DatabaseApiCode.Controllers
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAlloc);
-                        command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
+                        command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocationYear);
                         command.Parameters.AddWithValue("@UniversityID", bursaryallocation.UniversityID);
                         command.Parameters.AddWithValue("@UniversityApplicationID", bursaryallocation.UniversityApplicationID);
 

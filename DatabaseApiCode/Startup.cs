@@ -50,6 +50,9 @@ namespace DatabaseApiCode
             services.AddScoped<UsersContactsController>();
             services.AddScoped<ErrorController>();
             services.AddScoped<DocumentsController>();
+            services.AddScoped<UniversitySpendingsController>();
+            services.AddScoped<LoginController>();
+            services.AddScoped<ReviewerController>();
             
            
         }
