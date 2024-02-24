@@ -12,6 +12,7 @@ namespace DatabaseApiCode.Models
         public string StudentIDNum {get; init;}
 
         public int StudentMarks {get; init;}
+        public int CourseYear {get; init;}
         public int ApplicationStatusID {get; init;}
         
     }

@@ -153,6 +153,7 @@ CREATE TABLE [dbo].[StudentAllocations](
     AllocationYear INT,
     StudentIDNum CHAR(13) REFERENCES [dbo].StudentsTable(StudentIDNum),
     StudentMarks INT, 
+    CourseYear INT,
     ApplicationStatusID INT
     CONSTRAINT FK_StudentAppStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID),
     CONSTRAINT CHK_AmountVal CHECK (Amount >= 0), -- no negatives 
