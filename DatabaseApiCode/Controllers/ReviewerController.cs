@@ -101,6 +101,19 @@ namespace DatabaseApiCode.Controllers
 
                                 reviewers.Add(reviewer);
                             }
+
+                            // Replace null values with a unique identifier to represent "No application"
+                            foreach (var reviewer in reviewers)
+                            {
+                                if (reviewer.StudentAllocationID == null)
+                                {
+                                    reviewer.StudentAllocationID = 0; // Unique identifier for "No application"
+                                }
+                                if (reviewer.UniversityApplicationID == null)
+                                {
+                                    reviewer.UniversityApplicationID = 0; 
+                                }
+                            }
                         }
                         return Ok(reviewers);
                     }
