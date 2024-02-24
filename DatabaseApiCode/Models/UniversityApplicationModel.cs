@@ -16,7 +16,7 @@ namespace DatabaseApiCode.Models
         public int ApplicationYear {get; init; }
 
         // Actually an int because 1 or 0 even though BIT on Database
-        public int IsLocked {get; init; }
+        public bool IsLocked {get; init; }
 
     }
 }

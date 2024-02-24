@@ -80,7 +80,7 @@ namespace DatabaseApiCode.Controllers
                                 AmountRequested = reader.GetDecimal(2),
                                 UniversityID = reader.GetInt32(3),
                                 ApplicationYear = reader.GetInt32(4), 
-                                IsLocked = reader.GetInt32(5) // Will this work because BIT on DB?
+                                IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
                             };
                             universityApplications.Add(universityApplication);
                         }
@@ -166,7 +166,7 @@ namespace DatabaseApiCode.Controllers
                                     AmountRequested = reader.GetDecimal(2),
                                     UniversityID = reader.GetInt32(3),
                                     ApplicationYear = reader.GetInt32(4), 
-                                    IsLocked = reader.GetInt32(5) // Will this work because BIT on DB?
+                                    IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
                                 };
                                 return Ok(universityApplication);
                             }

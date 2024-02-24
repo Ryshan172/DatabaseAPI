@@ -155,7 +155,7 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, ApplicationStatusID FROM StudentAllocations WHERE AllocationID = @AllocationID";
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, StudentMarks, CourseYear, ApplicationStatusID FROM StudentAllocations WHERE StudentIDNum = @StudentIDNum";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@StudentIDNum", studentId);
@@ -170,7 +170,9 @@ namespace DatabaseApiCode.Controllers
                                     Amount = reader.GetDecimal(1),
                                     AllocationYear = reader.GetInt32(2),
                                     StudentIDNum = reader.GetString(3),
-                                    ApplicationStatusID = reader.GetInt32(4)
+                                    StudentMarks = reader.GetInt32(4),
+                                    CourseYear = reader.GetInt32(5),
+                                    ApplicationStatusID = reader.GetInt32(6)
                                 };
                                 return Ok(studentAllocation);
                             }

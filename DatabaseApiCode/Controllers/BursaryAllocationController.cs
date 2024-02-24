@@ -27,7 +27,7 @@ namespace DatabaseApiCode.Controllers
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT UniversityID, AmountAlloc, AllocationYear FROM BursaryAllocations WHERE AllocationYear = @AllocationYear";
+                string query = "SELECT UniversityID, AmountAlloc, AllocationYear, UniversityApplicationID FROM BursaryAllocations WHERE AllocationYear = @AllocationYear";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@AllocationYear", allocationYear);
@@ -43,7 +43,8 @@ namespace DatabaseApiCode.Controllers
                         {
                             UniversityID = reader.GetInt32(0),
                             AmountAlloc = reader.GetDecimal(1),
-                            AllocatedYear = reader.GetInt32(2)
+                            AllocatedYear = reader.GetInt32(2),
+                            UniversityApplicationID = reader.GetInt32(4)
                         };
 
                         allocations.Add(allocation);
@@ -77,13 +78,14 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear, UniversityID)
-                        VALUES (@AmountAlloc, @AllocationYear, @UniversityID)";
+                        INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear, UniversityID, UniversityApplicationID)
+                        VALUES (@AmountAlloc, @AllocationYear, @UniversityID, @UniversityApplicationID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@AmountAlloc", bursaryallocation.AmountAlloc);
                         command.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocatedYear);
                         command.Parameters.AddWithValue("@UniversityID", bursaryallocation.UniversityID);
+                        command.Parameters.AddWithValue("@UniversityApplicationID", bursaryallocation.UniversityApplicationID);
 
                         
                         await command.ExecuteNonQueryAsync();
