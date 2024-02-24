@@ -57,5 +57,56 @@ namespace DatabaseApiCode.Controllers
             E.g if User FK error then say "User does not exist"
             */
         }
+
+
+        [HttpGet("students")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = @"
+                        SELECT S.StudentIDNum, U.FirstName, U.LastName, U.RoleID, U.UserID, S.DateOfBirth, S.GenderID, S.EthnicityID, S.DepartmentID, S.UniversityID
+                        FROM StudentsTable S
+                        INNER JOIN Users U ON S.UserID = U.UserID";
+
+                    var students = new List<StudentModel>();
+
+                    using (var command = new SqlCommand(sql, connection))
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var student = new StudentModel
+                            {
+                                StudentIDNum = reader.GetString(0),
+                                FirstName = reader.GetString(1),
+                                LastName = reader.GetString(2),
+                                RoleID = reader.GetInt32(3),
+                                UserID = reader.GetInt32(4),
+                                DateOfBirth = reader.GetDateTime(5),
+                                GenderID = reader.GetInt32(6),
+                                EthnicityID = reader.GetInt32(7),
+                                DepartmentID = reader.GetInt32(8),
+                                UniversityID = reader.GetInt32(9),
+                            
+                            };
+                            students.Add(student);
+                        }
+                    }
+
+                    return Ok(students);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
     }
 }

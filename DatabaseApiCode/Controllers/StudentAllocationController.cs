@@ -188,6 +188,58 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        // Search for Allocations By UniversityID 
+        [HttpGet("university/{universityId}")]
+        public async Task<IActionResult> GetStudentAllocationsByUniversityId(int universityId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = @"
+                        SELECT SA.AllocationID, SA.Amount, SA.AllocationYear, SA.StudentIDNum, SA.StudentMarks, SA.CourseYear, SA.ApplicationStatusID
+                        FROM StudentAllocations SA
+                        INNER JOIN StudentsTable ST ON SA.StudentIDNum = ST.StudentIDNum
+                        WHERE ST.UniversityID = @UniversityID";
+
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@UniversityID", universityId);
+
+                        var studentAllocations = new List<StudentAllocationModel>();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var studentAllocation = new StudentAllocationModel
+                                {
+                                    AllocationID = reader.GetInt32(0),
+                                    Amount = reader.GetDecimal(1),
+                                    AllocationYear = reader.GetInt32(2),
+                                    StudentIDNum = reader.GetString(3),
+                                    StudentMarks = reader.GetInt32(4),
+                                    CourseYear = reader.GetInt32(5),
+                                    ApplicationStatusID = reader.GetInt32(6)
+                                };
+                                studentAllocations.Add(studentAllocation);
+                            }
+                        }
+
+                        return Ok(studentAllocations);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
     }
     
 }
