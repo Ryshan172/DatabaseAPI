@@ -6,4 +6,6 @@ public record StudentInfoModel
     public string LastName { get; init; }
     public decimal AllocationAmount { get; init; }
 
+    public string StudentIDNum { get; init; }
+
 }

@@ -40,6 +40,7 @@ namespace DatabaseApiCode.Controllers
                     U.UserID,
                     U.FirstName,
                     U.LastName,
+                    S.StudentIDNum,
                     SA.Amount AS AllocationAmount
                 FROM 
                     Users U
@@ -82,15 +83,17 @@ namespace DatabaseApiCode.Controllers
                         {
                             string firstName = reader["FirstName"].ToString();
                             string lastName = reader["LastName"].ToString();
+                            string studentIDNum = reader["StudentIDNum"].ToString();
                             decimal allocationAmount = Convert.ToDecimal(reader["AllocationAmount"]);
                             AmountRemaining = totalAmount - allocationAmount;
 
                             fundedStudents.Add(new StudentInfoModel
-                            {
+                            {   
                                 FirstName = firstName,
                                 LastName = lastName,
-                                AllocationAmount = allocationAmount
+                                AllocationAmount = allocationAmount,
                                 // AmountRemaining = AmountRemaining
+                                StudentIDNum = studentIDNum
 
                             });
                         }

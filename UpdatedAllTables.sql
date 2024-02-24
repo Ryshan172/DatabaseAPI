@@ -99,9 +99,11 @@ CREATE TABLE [dbo].[UniversityApplication] (
     ApplicationStatusID INT,
     AmountRequested money,
     UniversityID INT REFERENCES Universities(UniversityID),
+    ApplicationYear INT,
     IsLocked BIT NOT NULL DEFAULT 0, -- Adding IsLocked field, Default 0 = false
     CONSTRAINT FK_ApplicationStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID),
-    CONSTRAINT CHK_AmountAllocVal CHECK (AmountRequested >= 0) -- no negatives 
+    CONSTRAINT CHK_AmountAllocVal CHECK (AmountRequested >= 0), -- no negatives 
+    CONSTRAINT CHK_AppYear CHECK (ApplicationYear >= 0)
 );
 
 -- Creating Bursary Allocations Table
@@ -110,9 +112,12 @@ CREATE TABLE BursaryAllocations (
     UniversityID INT,
     AmountAlloc MONEY,
     AllocationYear INT,
+    UniversityApplicationID INT,
     FOREIGN KEY (UniversityID) REFERENCES Universities(UniversityID),
+    CONSTRAINT FK_BursLinkID FOREIGN KEY (UniversityApplicationID) REFERENCES UniversityApplication(ApplicationID),
 	-- Needs to be more than 0 
-    CONSTRAINT CHK_AmountAlloc CHECK (AmountAlloc >= 0)
+    CONSTRAINT CHK_AmountAlloc CHECK (AmountAlloc >= 0),
+    CONSTRAINT CHK_BursAllocationYear CHECK (AllocationYear >= 0)
 );
 GO
 
@@ -157,7 +162,8 @@ CREATE TABLE [dbo].[StudentAllocations](
     ApplicationStatusID INT
     CONSTRAINT FK_StudentAppStatus FOREIGN KEY (ApplicationStatusID) REFERENCES ApplicationStatuses(StatusID),
     CONSTRAINT CHK_AmountVal CHECK (Amount >= 0), -- no negatives 
-    CONSTRAINT CHK_AllocationYear CHECK (AllocationYear >= 0)
+    CONSTRAINT CHK_AllocationYear CHECK (AllocationYear >= 0),
+    CONSTRAINT CHK_CourseYear CHECK (CourseYear >= 0)
 );
 GO
 
@@ -180,12 +186,11 @@ CREATE TABLE [dbo].TemporaryLinks (
 -- Creating Reviewers Table 
 CREATE TABLE [dbo].Reviewers (
     ReviewerID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
-    UserID INT NOT NULL,
+    UserID INT REFERENCES Users (UserID),
     StudentAllocationID INT,
-    UniversityID INT,
-    CONSTRAINT FK_ReviewerUser FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    UniversityApplicationID INT,
     CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
-    CONSTRAINT FK_UniversityID FOREIGN KEY (UniversityID) REFERENCES Universities(UniversityID)
+    CONSTRAINT FK_UniversityApplicationID FOREIGN KEY (UniversityApplicationID) REFERENCES UniversityApplication(ApplicationID)
 )
 
 

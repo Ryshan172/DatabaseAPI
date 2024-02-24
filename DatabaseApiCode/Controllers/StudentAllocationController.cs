@@ -31,14 +31,15 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        INSERT INTO StudentAllocations (Amount, AllocationYear, StudentIDNum, StudentMarks, ApplicationStatusID)
-                        VALUES (@Amount, @AllocationYear, @StudentIDNum, @StudentMarks, @ApplicationStatusID)";
+                        INSERT INTO StudentAllocations (Amount, AllocationYear, StudentIDNum, StudentMarks, CourseYear, ApplicationStatusID)
+                        VALUES (@Amount, @AllocationYear, @StudentIDNum, @StudentMarks, @CourseYear, @ApplicationStatusID)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@Amount", StudentAllocationModel.Amount);
                         command.Parameters.AddWithValue("@AllocationYear", StudentAllocationModel.AllocationYear);
                         command.Parameters.AddWithValue("@StudentIDNum", StudentAllocationModel.StudentIDNum);
                         command.Parameters.AddWithValue("@StudentMarks", StudentAllocationModel.StudentMarks);
+                        command.Parameters.AddWithValue("@CourseYear", StudentAllocationModel.CourseYear);
                         command.Parameters.AddWithValue("@ApplicationStatusID", StudentAllocationModel.ApplicationStatusID);
                         
                         await command.ExecuteNonQueryAsync();
@@ -68,7 +69,7 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, ApplicationStatusID FROM StudentAllocations";
+                    var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, StudentMarks, CourseYear, ApplicationStatusID FROM StudentAllocations";
                     using (var command = new SqlCommand(sql, connection))
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -82,7 +83,9 @@ namespace DatabaseApiCode.Controllers
                                 Amount = reader.GetDecimal(1),
                                 AllocationYear = reader.GetInt32(2),
                                 StudentIDNum = reader.GetString(3),
-                                ApplicationStatusID = reader.GetInt32(4)
+                                StudentMarks = reader.GetInt32(4),
+                                CourseYear = reader.GetInt32(5),
+                                ApplicationStatusID = reader.GetInt32(6)
                             };
                             studentAllocations.Add(studentAllocation);
                         }
@@ -97,6 +100,7 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        // Update Student Application By StudentID Number 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStudentAllocation(string id, [FromBody] StudentAllocationModel studentAllocationModel)
         {
@@ -116,7 +120,7 @@ namespace DatabaseApiCode.Controllers
                         SET Amount = @Amount, 
                             AllocationYear = @AllocationYear, 
                             ApplicationStatusID = @ApplicationStatusID 
-                        WHERE AllocationID = @AllocationID";
+                        WHERE StudentIDNum = @StudentIDNum";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@Amount", studentAllocationModel.Amount);
@@ -127,7 +131,7 @@ namespace DatabaseApiCode.Controllers
                         int rowsAffected = await command.ExecuteNonQueryAsync();
                         if (rowsAffected == 0)
                         {
-                            return NotFound($"Student Allocation with AllocationID {id} not found");
+                            return NotFound($"Student Allocation with StudentIDNum {id} not found");
                         }
                     }
                 }
@@ -142,8 +146,8 @@ namespace DatabaseApiCode.Controllers
 
 
         // Search for Student Allocation by ID
-        [HttpGet("{allocationId}")]
-        public async Task<IActionResult> GetStudentAllocationById(int allocationId)
+        [HttpGet("{studentId}")]
+        public async Task<IActionResult> GetStudentAllocationById(string studentId)
         {
             try
             {
@@ -154,7 +158,7 @@ namespace DatabaseApiCode.Controllers
                     var sql = "SELECT AllocationID, Amount, AllocationYear, StudentIDNum, ApplicationStatusID FROM StudentAllocations WHERE AllocationID = @AllocationID";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@AllocationID", allocationId);
+                        command.Parameters.AddWithValue("@StudentIDNum", studentId);
 
                         using (var reader = await command.ExecuteReaderAsync())
                         {
