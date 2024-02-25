@@ -175,11 +175,13 @@ CREATE TABLE [dbo].Documents (
 );
 GO
 
+
 CREATE TABLE [dbo].TemporaryLinks (
-    LinkID INT PRIMARY KEY CLUSTERED identity(1,1),
+    TokenID INT PRIMARY KEY CLUSTERED IDENTITY(1,1),
     StudentIDNum CHAR(13) REFERENCES [dbo].StudentsTable(StudentIDNum),
-    LinkUrl NVARCHAR(1000), -- URL for link, 
-    ExpiryDate DATE
+    TempLink NVARCHAR(1000), -- URL for link, 
+    Token CHAR(36), 
+    ExpiryDate DATETIME
     
 )
 
@@ -192,6 +194,9 @@ CREATE TABLE [dbo].Reviewers (
     CONSTRAINT FK_StudnetAlloc FOREIGN KEY (StudentAllocationID) REFERENCES StudentAllocations(AllocationID),
     CONSTRAINT FK_UniversityApplicationID FOREIGN KEY (UniversityApplicationID) REFERENCES UniversityApplication(ApplicationID)
 )
+
+
+
 
 
 /* 
