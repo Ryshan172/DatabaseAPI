@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 
 using Microsoft.OpenApi.Models;
 using DatabaseApiCode.Controllers;
