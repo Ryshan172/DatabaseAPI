@@ -26,8 +26,11 @@ namespace DatabaseApiCode.Controllers
             // Calculate the expiry date (1 week from now)
             DateTime expiryDate = DateTime.Now.AddDays(7);
 
+            //Expire 10 Seconds
+            //DateTime expiryDate = DateTime.Now.AddSeconds(10);
+
             // Construct the URL with the token
-            string url = $"https://yourwebsite.com/login?token={token}";
+            string url = $"https://ukukhulabursary.netlify.app/upload-documents?token={token}";
 
             // Save the token and URL in the database
             using (SqlConnection connection = new SqlConnection(_connectionString))

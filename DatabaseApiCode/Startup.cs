@@ -53,6 +53,7 @@ namespace DatabaseApiCode
             services.AddScoped<LoginController>();
             services.AddScoped<ReviewerController>();
             services.AddScoped<BbdSpendingsController>();
+            services.AddScoped<TokenController>();
 
             
            

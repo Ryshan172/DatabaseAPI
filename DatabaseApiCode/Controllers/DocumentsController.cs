@@ -77,7 +77,7 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Search for Student Allocation by ID
+        // Search for Student Documents by ID
         [HttpGet("{studentIdNum}")]
         public async Task<IActionResult> GetStudentDocumentsByID(string studentIdNum)
         {

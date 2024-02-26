@@ -136,9 +136,9 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Get Application by ID
-        [HttpGet("{applicationId}")]
-        public async Task<IActionResult> GetUniversityApplicationById(int applicationId)
+        // Get Application by UniversityID
+        [HttpGet("{universityId}")]
+        public async Task<IActionResult> GetUniversityApplicationById(int universityId)
         {
             try
             {
@@ -146,10 +146,10 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked, FROM UniversityApplication WHERE ApplicationID = @ApplicationID";
+                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = @UniversityID";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ApplicationID", applicationId);
+                        command.Parameters.AddWithValue("@UniversityID", universityId);
 
                         using (var reader = await command.ExecuteReaderAsync())
                         {
