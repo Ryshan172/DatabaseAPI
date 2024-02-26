@@ -4,7 +4,7 @@ namespace DatabaseApiCode.Models
 {
     public class StudentModel : UserModel
     {
-        public int StudentID { get; set; }
+        public string StudentIDNum { get; set; }
 
         public DateTime DateOfBirth { get; set; }
 

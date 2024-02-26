@@ -1,7 +1,3 @@
-#pragma warning disable CS8601
-#pragma warning disable CS1591
-#pragma warning disable CS8618
-#pragma warning disable CS8600
 
 namespace DatabaseApiCode.Controllers
 {    
@@ -139,6 +135,46 @@ namespace DatabaseApiCode.Controllers
 
             return Ok(user);
         }
+
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUserByID(int userId, [FromBody] UserModel userModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = "UPDATE Users SET FirstName = @FirstName, LastName = @LastName, RoleID = @RoleID WHERE UserID = @UserID";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@FirstName", userModel.FirstName);
+                        command.Parameters.AddWithValue("@LastName", userModel.LastName);
+                        command.Parameters.AddWithValue("@RoleID", userModel.RoleID);
+                        command.Parameters.AddWithValue("@UserID", userId);
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            return NotFound($"User with ID {userId} not found.");
+                        }
+                    }
+                }
+
+                return Ok($"User with ID {userId} updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
     }
 }

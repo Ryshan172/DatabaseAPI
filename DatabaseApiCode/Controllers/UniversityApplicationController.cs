@@ -1,6 +1,3 @@
-#pragma warning disable CS8601
-#pragma warning disable CS1591
-#pragma warning disable CS8618
 
 namespace DatabaseApiCode.Controllers
 {    // Controller for Inserting Values in the University Applications Table 
@@ -32,13 +29,15 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        INSERT INTO UniversityApplication (ApplicationStatusID, AmountRequested, UniversityID)
-                        VALUES (@ApplicationStatusID, @AmountRequested, @UniversityID)";
+                        INSERT INTO UniversityApplication (ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked)
+                        VALUES (@ApplicationStatusID, @AmountRequested, @UniversityID, @ApplicationYear, @IsLocked)";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@ApplicationStatusID", universityApplicationModel.ApplicationStatusID);
                         command.Parameters.AddWithValue("@AmountRequested", universityApplicationModel.AmountRequested);
                         command.Parameters.AddWithValue("@UniversityID", universityApplicationModel.UniversityID);
+                        command.Parameters.AddWithValue("@ApplicationYear", universityApplicationModel.ApplicationYear);
+                        command.Parameters.AddWithValue("@IsLocked", universityApplicationModel.IsLocked);
                         
                         await command.ExecuteNonQueryAsync();
                     }
@@ -63,7 +62,7 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID FROM UniversityApplication";
+                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked FROM UniversityApplication";
                     using (var command = new SqlCommand(sql, connection))
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -76,7 +75,9 @@ namespace DatabaseApiCode.Controllers
                                 ApplicationStatusID = reader.GetInt32(1),
                                 // Changed model to Decimal
                                 AmountRequested = reader.GetDecimal(2),
-                                UniversityID = reader.GetInt32(3)
+                                UniversityID = reader.GetInt32(3),
+                                ApplicationYear = reader.GetInt32(4), 
+                                IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
                             };
                             universityApplications.Add(universityApplication);
                         }
@@ -92,7 +93,7 @@ namespace DatabaseApiCode.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUniversityApplicationStatus([FromBody] UniversityApplicationModel universityApplicationModel)
+        public async Task<IActionResult> UpdateUniversityApplication([FromBody] UniversityApplicationModel universityApplicationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -106,10 +107,20 @@ namespace DatabaseApiCode.Controllers
                     await connection.OpenAsync();
 
                     var sql = @"
-                        UPDATE UniversityApplication SET ApplicationStatusID = @ApplicationStatusID WHERE ApplicationID = @ApplicationID";
+                        UPDATE UniversityApplication 
+                        SET ApplicationStatusID = @ApplicationStatusID,
+                            AmountRequested = @AmountRequested,
+                            UniversityID = @UniversityID,
+                            ApplicationYear = @ApplicationYear,
+                            IsLocked = @IsLocked
+                        WHERE ApplicationID = @ApplicationID";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@ApplicationStatusID", universityApplicationModel.ApplicationStatusID);
+                        command.Parameters.AddWithValue("@AmountRequested", universityApplicationModel.AmountRequested);
+                        command.Parameters.AddWithValue("@UniversityID", universityApplicationModel.UniversityID);
+                        command.Parameters.AddWithValue("@ApplicationYear", universityApplicationModel.ApplicationYear);
+                        command.Parameters.AddWithValue("@IsLocked", universityApplicationModel.IsLocked);
                         command.Parameters.AddWithValue("@ApplicationID", universityApplicationModel.ApplicationID);
                         
                         await command.ExecuteNonQueryAsync();
@@ -122,13 +133,12 @@ namespace DatabaseApiCode.Controllers
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-
         }
 
 
-        // Get Application by ID
-        [HttpGet("{applicationId}")]
-        public async Task<IActionResult> GetUniversityApplicationById(int applicationId)
+        // Get Application by UniversityID
+        [HttpGet("{universityId}")]
+        public async Task<IActionResult> GetUniversityApplicationById(int universityId)
         {
             try
             {
@@ -136,10 +146,10 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID FROM UniversityApplication WHERE ApplicationID = @ApplicationID";
+                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = @UniversityID";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ApplicationID", applicationId);
+                        command.Parameters.AddWithValue("@UniversityID", universityId);
 
                         using (var reader = await command.ExecuteReaderAsync())
                         {
@@ -151,7 +161,9 @@ namespace DatabaseApiCode.Controllers
                                     ApplicationStatusID = reader.GetInt32(1),
                                     // Changed model to Decimal
                                     AmountRequested = reader.GetDecimal(2),
-                                    UniversityID = reader.GetInt32(3)
+                                    UniversityID = reader.GetInt32(3),
+                                    ApplicationYear = reader.GetInt32(4), 
+                                    IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
                                 };
                                 return Ok(universityApplication);
                             }

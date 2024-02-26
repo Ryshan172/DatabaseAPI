@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 
 using Microsoft.OpenApi.Models;
 using DatabaseApiCode.Controllers;
@@ -49,6 +48,13 @@ namespace DatabaseApiCode
             services.AddScoped<UsersController>();
             services.AddScoped<UsersContactsController>();
             services.AddScoped<ErrorController>();
+            services.AddScoped<DocumentsController>();
+            services.AddScoped<UniversitySpendingsController>();
+            services.AddScoped<LoginController>();
+            services.AddScoped<ReviewerController>();
+            services.AddScoped<BbdSpendingsController>();
+            services.AddScoped<TokenController>();
+
             
            
         }

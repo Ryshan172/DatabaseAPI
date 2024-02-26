@@ -1,7 +1,3 @@
-#pragma warning disable CS8601
-#pragma warning disable CS1591
-#pragma warning disable CS8618
-#pragma warning disable CS8600
 
 namespace DatabaseApiCode.Controllers
 {
@@ -40,13 +36,14 @@ namespace DatabaseApiCode.Controllers
                     U.UserID,
                     U.FirstName,
                     U.LastName,
+                    S.StudentIDNum,
                     SA.Amount AS AllocationAmount
                 FROM 
                     Users U
                 INNER JOIN 
                     StudentsTable S ON U.UserID = S.UserID
                 INNER JOIN 
-                    StudentAllocations SA ON S.StudentID = SA.StudentID
+                    StudentAllocations SA ON S.StudentIDNum = SA.StudentIDNum
                 INNER JOIN 
                     BursaryAllocations B ON SA.AllocationID = B.AllocationID
                 WHERE 
@@ -82,15 +79,17 @@ namespace DatabaseApiCode.Controllers
                         {
                             string firstName = reader["FirstName"].ToString();
                             string lastName = reader["LastName"].ToString();
+                            string studentIDNum = reader["StudentIDNum"].ToString();
                             decimal allocationAmount = Convert.ToDecimal(reader["AllocationAmount"]);
                             AmountRemaining = totalAmount - allocationAmount;
 
                             fundedStudents.Add(new StudentInfoModel
-                            {
+                            {   
                                 FirstName = firstName,
                                 LastName = lastName,
-                                AllocationAmount = allocationAmount
+                                AllocationAmount = allocationAmount,
                                 // AmountRemaining = AmountRemaining
+                                StudentIDNum = studentIDNum
 
                             });
                         }

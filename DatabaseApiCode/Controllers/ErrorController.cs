@@ -1,5 +1,3 @@
-#pragma warning disable CS1591
-#pragma warning disable CS8602
 
 using Microsoft.AspNetCore.Diagnostics;
 

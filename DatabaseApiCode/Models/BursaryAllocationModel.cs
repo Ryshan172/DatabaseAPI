@@ -8,13 +8,16 @@ namespace DatabaseApiCode.Models
 
     {
         // public int ApplicationID{get; set;}
-        public int UniversityID{ get; init; }
+        public int UniversityID { get; init; }
 
         [Required(ErrorMessage = "AmountAllocated is required.")]
-        public decimal AmountAlloc{ get; init; }
+        public decimal AmountAlloc { get; init; }
 
         [Required(ErrorMessage = "AllocatedDate is required.")]
-        public int AllocatedYear{ get; init; }
+        public int AllocationYear { get; init; }
+
+        [Required(ErrorMessage = "UniversityApplication is required.")]
+        public int UniversityApplicationID { get; init; }
 
     }
 }
