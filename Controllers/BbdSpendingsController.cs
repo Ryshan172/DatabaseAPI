@@ -160,5 +160,29 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        // Distribute Funds to Universities
+        [HttpPost("allocateFundsToUniversities")]
+        public IActionResult AllocateFundsToUniversities()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand("EXEC [dbo].[AllocateFundsToUniversities]", connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Ok("Funds allocated to universities successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
     }
 }
