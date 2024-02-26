@@ -1,43 +1,52 @@
-
 using Microsoft.OpenApi.Models;
 using DatabaseApiCode.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
-
+ 
 namespace DatabaseApiCode
 {    
-
+ 
     public class Startup
     {
-
+ 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
+ 
         public IConfiguration Configuration { get; }
-
+ 
         // Method gets called by Runtime -> Used to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddNewtonsoftJson();
-
+ 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+ 
             // Register Swagger generator
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bursary Database API", Version = "v1" });
-
+ 
                 // Generate xml docs to drive swagger docs
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
+ 
                 c.IncludeXmlComments(xmlPath);
                 c.CustomOperationIds(apiDescription =>
                 {
                     return apiDescription.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
                 });
             }).AddSwaggerGenNewtonsoftSupport();
-            
             // Registering Different Controllers with Dependency Injection (DI)
             services.AddScoped<DepartmentsController>();
             services.AddScoped<UniversitiesController>();
@@ -54,11 +63,10 @@ namespace DatabaseApiCode
             services.AddScoped<ReviewerController>();
             services.AddScoped<BbdSpendingsController>();
             services.AddScoped<TokenController>();
-
+ 
             
-           
         }
-
+ 
         // Configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -70,10 +78,10 @@ namespace DatabaseApiCode
             {
                 app.UseExceptionHandler("/error");
             }
-
+ 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-
+ 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
@@ -81,15 +89,15 @@ namespace DatabaseApiCode
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bursary Database API V1");
                 c.DisplayOperationId();
             });
-
+ 
             app.UseRouting();
-
+            app.UseCors("AllowAll");
             app.UseAuthorization(
-
+ 
                 
-
+ 
             );
-
+ 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -97,3 +105,4 @@ namespace DatabaseApiCode
         }
     }
 }
+ 
