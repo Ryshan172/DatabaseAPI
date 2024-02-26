@@ -240,6 +240,45 @@ namespace DatabaseApiCode.Controllers
 
 
 
+        [HttpPost("createStudentApplication")]
+        public IActionResult CreateStudentApplication([FromBody] CreateStudentApplicationModel model)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand("EXEC [dbo].[CreateStudentApplication] @PhoneNumber, @Email, @FirstName, @LastName, @StudentIDNum, @DateOfBirth, @GenderID, @EthnicityID, @DepartmentID, @UniversityID, @Amount, @StudentMarks, @CourseYear", connection))
+                    {
+                        command.Parameters.AddWithValue("@PhoneNumber", model.PhoneNumber);
+                        command.Parameters.AddWithValue("@Email", model.Email);
+                        command.Parameters.AddWithValue("@FirstName", model.FirstName);
+                        command.Parameters.AddWithValue("@LastName", model.LastName);
+                        command.Parameters.AddWithValue("@StudentIDNum", model.StudentIDNum);
+                        command.Parameters.AddWithValue("@DateOfBirth", model.DateOfBirth);
+                        command.Parameters.AddWithValue("@GenderID", model.GenderID);
+                        command.Parameters.AddWithValue("@EthnicityID", model.EthnicityID);
+                        command.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
+                        command.Parameters.AddWithValue("@UniversityID", model.UniversityID);
+                        command.Parameters.AddWithValue("@Amount", model.Amount);
+                        command.Parameters.AddWithValue("@StudentMarks", model.StudentMarks);
+                        command.Parameters.AddWithValue("@CourseYear", model.CourseYear);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Ok("Student application created successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
     }
     
 }

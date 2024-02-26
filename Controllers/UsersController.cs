@@ -176,5 +176,129 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        [HttpGet("users/{roleName}")]
+        [ProducesResponseType(typeof(List<UserWithContactModel>), 200)]
+        public IActionResult GetUsersByRoleName(string roleName)
+        {
+            List<UserWithContactModel> users = new List<UserWithContactModel>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string roleIdQuery = "SELECT RoleID FROM Roles WHERE RoleName = @RoleName";
+                SqlCommand roleIdCommand = new SqlCommand(roleIdQuery, connection);
+                roleIdCommand.Parameters.AddWithValue("@RoleName", roleName);
+
+                string usersQuery = @"
+                    SELECT u.UserID, u.FirstName, u.LastName, u.RoleID, c.Email, c.PhoneNumber
+                    FROM Users u
+                    INNER JOIN ContactDetails c ON u.UserID = c.UserID
+                    WHERE u.RoleID = @RoleID";
+
+                try
+                {
+                    connection.Open();
+
+                    // Get RoleID by RoleName
+                    int roleId = Convert.ToInt32(roleIdCommand.ExecuteScalar());
+                    if (roleId == 0)
+                    {
+                        return NotFound($"Role '{roleName}' not found.");
+                    }
+
+                    // Retrieve users with the given RoleID
+                    SqlCommand command = new SqlCommand(usersQuery, connection);
+                    command.Parameters.AddWithValue("@RoleID", roleId);
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        UserWithContactModel user = new UserWithContactModel
+                        {
+                            UserID = reader.GetInt32(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            RoleID = reader.GetInt32(3),
+                            Email = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            PhoneNumber = reader.IsDBNull(5) ? null : reader.GetString(5)
+                        };
+                        users.Add(user);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return StatusCode(500, "An error occurred while fetching the users.");
+                }
+            }
+
+            return Ok(users);
+        }
+
+
+        [HttpPost("createBBDUser")]
+        public IActionResult CreateBBDUser([FromBody] CreateUserModel model)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand("EXEC [dbo].[CreateBBDUser] @PhoneNumber, @Email, @FirstName, @LastName", connection))
+                    {
+                        command.Parameters.AddWithValue("@PhoneNumber", model.PhoneNumber);
+                        command.Parameters.AddWithValue("@Email", model.Email);
+                        command.Parameters.AddWithValue("@FirstName", model.FirstName);
+                        command.Parameters.AddWithValue("@LastName", model.LastName);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Ok("User created successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+        [HttpPost("createUniversityUser")]
+        public IActionResult CreateUniversityUser([FromBody] CreateUniversityUserModel model)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand("EXEC [dbo].[CreateUniversityUser] @PhoneNumber, @Email, @FirstName, @LastName, @DepartmentID, @UniversityID", connection))
+                    {
+                        command.Parameters.AddWithValue("@PhoneNumber", model.PhoneNumber);
+                        command.Parameters.AddWithValue("@Email", model.Email);
+                        command.Parameters.AddWithValue("@FirstName", model.FirstName);
+                        command.Parameters.AddWithValue("@LastName", model.LastName);
+                        command.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
+                        command.Parameters.AddWithValue("@UniversityID", model.UniversityID);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                return Ok("University user created successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
+
+
+
+
+    
 }

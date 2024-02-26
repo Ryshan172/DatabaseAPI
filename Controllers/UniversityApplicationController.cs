@@ -15,7 +15,7 @@ namespace DatabaseApiCode.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddDepartment([FromBody] UniversityApplicationModel universityApplicationModel)
+        public async Task<IActionResult> AddUniversityApplication([FromBody] UniversityApplicationModel universityApplicationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -136,9 +136,10 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Get Application by UniversityID
-        [HttpGet("{universityId}")]
-        public async Task<IActionResult> GetUniversityApplicationById(int universityId)
+    
+        // Get Application by University Name
+        [HttpGet("{universityName}")]
+        public async Task<IActionResult> GetUniversityApplicationByName(string universityName)
         {
             try
             {
@@ -146,31 +147,47 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
-                    var sql = "SELECT ApplicationID, ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = @UniversityID";
-                    using (var command = new SqlCommand(sql, connection))
+                    // Query to get the UniversityID based on the University Name
+                    var getUniversityIdQuery = "SELECT UniversityID FROM Universities WHERE UniName = @UniversityName";
+                    using (var getUniversityIdCommand = new SqlCommand(getUniversityIdQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UniversityID", universityId);
+                        getUniversityIdCommand.Parameters.AddWithValue("@UniversityName", universityName);
+                        var universityId = await getUniversityIdCommand.ExecuteScalarAsync() as int?;
 
-                        using (var reader = await command.ExecuteReaderAsync())
+                        if (universityId.HasValue)
                         {
-                            if (await reader.ReadAsync())
+                            // Query to get the UniversityApplication based on the UniversityID
+                            var sql = "SELECT ApplicationID, UniversityID, ApplicationStatusID, AmountRequested, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = @UniversityID";
+                            using (var command = new SqlCommand(sql, connection))
                             {
-                                var universityApplication = new UniversityApplicationModel
+                                command.Parameters.AddWithValue("@UniversityID", universityId.Value);
+
+                                using (var reader = await command.ExecuteReaderAsync())
                                 {
-                                    ApplicationID = reader.GetInt32(0),
-                                    ApplicationStatusID = reader.GetInt32(1),
-                                    // Changed model to Decimal
-                                    AmountRequested = reader.GetDecimal(2),
-                                    UniversityID = reader.GetInt32(3),
-                                    ApplicationYear = reader.GetInt32(4), 
-                                    IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
-                                };
-                                return Ok(universityApplication);
+                                    if (await reader.ReadAsync())
+                                    {
+                                        var universityApplication = new UniversityApplicationModel
+                                        {
+                                            ApplicationID = reader.GetInt32(0),
+                                            UniversityID = reader.GetInt32(1),
+                                            ApplicationStatusID = reader.GetInt32(2),
+                                            // Changed model to Decimal
+                                            AmountRequested = reader.GetDecimal(3),
+                                            ApplicationYear = reader.GetInt32(4),
+                                            IsLocked = reader.GetBoolean(5) // Will this work because BIT on DB?
+                                        };
+                                        return Ok(universityApplication);
+                                    }
+                                    else
+                                    {
+                                        return NotFound("No university application for specified name"); // No university application found for the specified name
+                                    }
+                                }
                             }
-                            else
-                            {
-                                return NotFound(); // Application with the specified ID not found
-                            }
+                        }
+                        else
+                        {
+                            return NotFound(); // University with the specified name not found
                         }
                     }
                 }
@@ -180,6 +197,7 @@ namespace DatabaseApiCode.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
 
     }
 }
