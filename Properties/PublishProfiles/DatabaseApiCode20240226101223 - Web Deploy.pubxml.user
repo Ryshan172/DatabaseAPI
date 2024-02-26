@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAuk6IOoGBikqyTjJkBtpiOAAAAAACAAAAAAADZgAAwAAAABAAAABor2SBT71kBh4dxs/tD1JaAAAAAASAAACgAAAAEAAAAKSgJb3Trxk2HWS6CuHtqduYAAAA3R74HkOcx3oWr26fu9X6r6giDKDPxYYR3nl+2nok+YQU2uEfSxI/hVYVyje+B38s1d0XE+YS8pClA2e6K2oQegCR08VFhbS0kuNqR/R3qPQR1TvW8FbHuXmtvkheP4BcJad5GKlnSa8kpQ83xp7yswSNGkms/L7Bcy1aoaczvulORD/tBjqTjn9VELy/aFI0FjooaZMnFgwUAAAALpHSygrFzrwaVQhXCF0ZHFSgyVA=</EncryptedPassword>
+    <History>False|2024-02-26T09:14:39.9181888Z;False|2024-02-26T11:03:35.5211422+02:00;True|2024-02-26T10:52:41.6874772+02:00;True|2024-02-26T10:46:39.2796693+02:00;False|2024-02-26T10:38:35.3669317+02:00;False|2024-02-26T10:34:48.7176618+02:00;False|2024-02-26T10:21:06.6756283+02:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Server=tcp:bursaryserver1.database.windows.net,1433%3bInitial Catalog=BursaryDatabase1%3bPersist Security Info=False%3bUser ID=APIProjAdmin%3bPassword= rK78CV9D#%3bMultipleActiveResultSets=False%3bEncrypt=True%3bTrustServerCertificate=False%3bConnection Timeout=30%3b</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>
