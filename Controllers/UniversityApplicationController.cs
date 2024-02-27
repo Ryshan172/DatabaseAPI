@@ -199,5 +199,56 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+
+        // Get all university applications along with their names
+        [HttpGet("getAllUniversityApplicationsWithName")]
+        public async Task<IActionResult> GetAllUniversityApplicationsWithName()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Query to get all university applications along with their names
+                    var sql = @"
+                        SELECT UA.ApplicationID, UA.UniversityID, U.UniName AS UniversityName, UA.ApplicationStatusID, UA.AmountRequested, UA.ApplicationYear, UA.IsLocked 
+                        FROM UniversityApplication UA
+                        INNER JOIN Universities U ON UA.UniversityID = U.UniversityID";
+
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        var universityApplications = new List<UniversityApplicationModelWithName>();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var universityApplication = new UniversityApplicationModelWithName
+                                {
+                                    ApplicationID = reader.GetInt32(0),
+                                    UniversityID = reader.GetInt32(1),
+                                    UniversityName = reader.GetString(2),
+                                    ApplicationStatusID = reader.GetInt32(3),
+                                    AmountRequested = reader.GetDecimal(4),
+                                    ApplicationYear = reader.GetInt32(5),
+                                    IsLocked = reader.GetBoolean(6)
+                                };
+                                universityApplications.Add(universityApplication);
+                            }
+                        }
+
+                        return Ok(universityApplications);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
     }
 }

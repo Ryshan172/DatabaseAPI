@@ -98,8 +98,8 @@ namespace DatabaseApiCode.Controllers
 
 
         // Update Student Application By StudentID Number 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudentAllocation(string id, [FromBody] StudentAllocationModel studentAllocationModel)
+        [HttpPut]
+        public async Task<IActionResult> UpdateStudentAllocation([FromBody] FullStudentAppModel studentAllocationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -116,19 +116,23 @@ namespace DatabaseApiCode.Controllers
                         UPDATE StudentAllocations 
                         SET Amount = @Amount, 
                             AllocationYear = @AllocationYear, 
-                            ApplicationStatusID = @ApplicationStatusID 
+                            ApplicationStatusID = @ApplicationStatusID, 
+                            StudentMarks = @StudentMarks,
+                            CourseYear = @CourseYear
                         WHERE StudentIDNum = @StudentIDNum";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@Amount", studentAllocationModel.Amount);
                         command.Parameters.AddWithValue("@AllocationYear", studentAllocationModel.AllocationYear);
                         command.Parameters.AddWithValue("@ApplicationStatusID", studentAllocationModel.ApplicationStatusID);
-                        command.Parameters.AddWithValue("@AllocationID", id);
+                        command.Parameters.AddWithValue("@StudentMarks", studentAllocationModel.StudentMarks);
+                        command.Parameters.AddWithValue("@CourseYear", studentAllocationModel.CourseYear);
+                        command.Parameters.AddWithValue("@StudentIDNum", studentAllocationModel.StudentIDNum);
 
                         int rowsAffected = await command.ExecuteNonQueryAsync();
                         if (rowsAffected == 0)
                         {
-                            return NotFound($"Student Allocation with StudentIDNum {id} not found");
+                            return NotFound($"Student Allocation with Specified StudentIDNum not found");
                         }
                     }
                 }
@@ -140,6 +144,47 @@ namespace DatabaseApiCode.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+
+        [HttpPut("ApplicationStatus")]
+        public async Task<IActionResult> UpdateStudentAllocStatus(string id, [FromBody] UpdateStudentAllocationModel updateStudentAllocationModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var sql = @"
+                        UPDATE StudentAllocations 
+                        SET ApplicationStatusID = @ApplicationStatusID 
+                        WHERE StudentIDNum = @StudentIDNum";
+                    using (var command = new SqlCommand(sql, connection))
+                    {   
+                        command.Parameters.AddWithValue("@StudentIDNum", updateStudentAllocationModel.StudentIDNum);
+                        command.Parameters.AddWithValue("@ApplicationStatusID", updateStudentAllocationModel.ApplicationStatusID);
+
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        if (rowsAffected == 0)
+                        {
+                            return NotFound($"Student Allocation with specified StudentIDNum not found");
+                        }
+                    }
+                }
+
+                return Ok("Student Allocation updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
 
         // Search for Student Allocation by ID
