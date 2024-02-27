@@ -35,4 +35,23 @@ namespace DatabaseApiCode.Models
         public int CourseYear { get; set; }
     }
 
+
+
+    public class HODStudentAllocationModel 
+    {
+        public int AllocationID { get; set; }
+        public decimal Amount { get; init; }
+
+        public int AllocationYear { get; init; }
+
+        public string StudentIDNum {get; init;}
+
+        public int StudentMarks {get; init;}
+        public int CourseYear {get; init;}
+        public int ApplicationStatusID {get; init;}
+
+        public string UniName {get; init;}
+        
+    }
+
 }

@@ -239,6 +239,95 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetHODStudentAppsByUserId(int userId)
+        {
+            try
+            {
+                // Retrieve the UniversityID associated with the UserID
+                int universityId = 0; // Initialize universityId variable
+
+                // Connect to the database
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Query to retrieve UniversityID and UniName from UniversityUser and Universities tables
+                    var universityQuery = @"
+                        SELECT UU.UniversityID, U.UniName
+                        FROM UniversityUser UU
+                        INNER JOIN Universities U ON UU.UniversityID = U.UniversityID
+                        WHERE UU.UserID = @UserID";
+
+                    // Execute the query
+                    using (var universityCommand = new SqlCommand(universityQuery, connection))
+                    {
+                        universityCommand.Parameters.AddWithValue("@UserID", userId);
+                        var universityReader = await universityCommand.ExecuteReaderAsync();
+
+                        // Check if UniversityID exists for the given UserID
+                        if (universityReader.Read())
+                        {
+                            universityId = universityReader.GetInt32(0);
+                        }
+                        else
+                        {
+                            return NotFound("University not found for the given user.");
+                        }
+                    }
+                }
+
+                // Query to retrieve student allocations by UniversityID
+                var sql = @"
+                    SELECT SA.AllocationID, SA.Amount, SA.AllocationYear, SA.StudentIDNum, SA.StudentMarks, SA.CourseYear, SA.ApplicationStatusID, U.UniName
+                    FROM StudentAllocations SA
+                    INNER JOIN StudentsTable ST ON SA.StudentIDNum = ST.StudentIDNum
+                    INNER JOIN Universities U ON ST.UniversityID = U.UniversityID
+                    WHERE ST.UniversityID = @UniversityID";
+
+                // Connect to the database and execute the query
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@UniversityID", universityId);
+
+                        var studentAllocations = new List<HODStudentAllocationModel>();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var hodstudentAllocation = new HODStudentAllocationModel
+                                {
+                                    AllocationID = reader.GetInt32(0),
+                                    Amount = reader.GetDecimal(1),
+                                    AllocationYear = reader.GetInt32(2),
+                                    StudentIDNum = reader.GetString(3),
+                                    StudentMarks = reader.GetInt32(4),
+                                    CourseYear = reader.GetInt32(5),
+                                    ApplicationStatusID = reader.GetInt32(6),
+                                    UniName = reader.GetString(7) // Retrieve UniName from the query result
+                                };
+                                studentAllocations.Add(hodstudentAllocation);
+                            }
+                        }
+
+                        return Ok(studentAllocations);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
 
         [HttpPost("createStudentApplication")]
         public IActionResult CreateStudentApplication([FromBody] CreateStudentApplicationModel model)
