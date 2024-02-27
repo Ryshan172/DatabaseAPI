@@ -54,4 +54,27 @@ namespace DatabaseApiCode.Models
         
     }
 
+
+
+    public class UpdateStudentAllocationModel
+    {   
+        public string StudentIDNum {get; init;}
+        public int ApplicationStatusID {get; init;}
+    }
+
+
+    public class FullStudentAppModel
+    {   
+        public decimal Amount { get; init; }
+
+        public int AllocationYear { get; init; }
+
+        public string StudentIDNum {get; init;}
+
+        public int StudentMarks {get; init;}
+        public int CourseYear {get; init;}
+        public int ApplicationStatusID {get; init;}
+    }
+
+
 }
