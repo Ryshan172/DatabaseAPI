@@ -324,11 +324,13 @@ namespace DatabaseApiCode.Controllers
 
                 // Query to retrieve student allocations by UniversityID
                 var sql = @"
-                    SELECT SA.AllocationID, SA.Amount, SA.AllocationYear, SA.StudentIDNum, SA.StudentMarks, SA.CourseYear, SA.ApplicationStatusID, U.UniName
+                    SELECT SA.AllocationID, SA.Amount, SA.AllocationYear, ST.StudentIDNum, SA.StudentMarks, SA.CourseYear, SA.ApplicationStatusID, U.UniName, 
+                    U2.FirstName AS StudentFirstName, U2.LastName AS StudentLastName
                     FROM StudentAllocations SA
                     INNER JOIN StudentsTable ST ON SA.StudentIDNum = ST.StudentIDNum
+                    INNER JOIN Users U2 ON ST.UserID = U2.UserID  -- Join with Users table to get student's first name and last name
                     INNER JOIN Universities U ON ST.UniversityID = U.UniversityID
-                    WHERE ST.UniversityID = @UniversityID";
+                    WHERE ST.UniversityID = @UniversityID;";
 
                 // Connect to the database and execute the query
                 using (var connection = new SqlConnection(_connectionString))
@@ -354,7 +356,9 @@ namespace DatabaseApiCode.Controllers
                                     StudentMarks = reader.GetInt32(4),
                                     CourseYear = reader.GetInt32(5),
                                     ApplicationStatusID = reader.GetInt32(6),
-                                    UniName = reader.GetString(7) // Retrieve UniName from the query result
+                                    UniName = reader.GetString(7), // Retrieve UniName from the query result
+                                    StudentFirstName = reader.GetString(8),
+                                    StudentLastName = reader.GetString(9),
                                 };
                                 studentAllocations.Add(hodstudentAllocation);
                             }
