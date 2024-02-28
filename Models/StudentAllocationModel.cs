@@ -80,5 +80,25 @@ namespace DatabaseApiCode.Models
         public int ApplicationStatusID {get; init;}
     }
 
+    public class ProStudentModel {
+
+        public decimal Amount { get; init; }
+        public int AllocationYear { get; init; }
+        public int StudentMarks { get; init; }
+        public int CourseYear { get; init; }
+        public int ApplicationStatusID { get; init; }
+        public int AllocationID { get; init; }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
+        public string Email { get; init; }
+        public string PhoneNumber { get; init; }
+        public string StudentIdNumber { get; init; }
+        public DateTime DateOfBirth { get; init; }
+        public string Department { get; init; }
+        public string Ethnicity { get; init; }
+        public string Gender { get; init; }
+        public string University { get; init; }
+    }
+
 
 }

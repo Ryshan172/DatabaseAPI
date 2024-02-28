@@ -1,6 +1,8 @@
 
 // using DatabaseApiCode.Attributes;
 // 
+using System.Data;
+
 namespace DatabaseApiCode.Controllers
 {   
     [ApiController]
@@ -160,28 +162,70 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Distribute Funds to Universities
+
         [HttpPost("allocateFundsToUniversities")]
-        public IActionResult AllocateFundsToUniversities()
+        public async Task<IActionResult> AllocateFundsToUniversities()
         {
+
+            
+         DataTable GetDataTable(string query, SqlConnection connection)
+        {
+            DataTable dataTable = new DataTable();
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            adapter.Fill(dataTable);
+            return dataTable;
+        }
             try
             {
-                using (var connection = new SqlConnection(_connectionString))
+                SqlConnection connection = new SqlConnection(_connectionString);
+
+                await connection.OpenAsync();
+
+                string BBDFund = @"SELECT AmountRemaining FROM BBDAdminBalance
+                                   WHERE BudgetYear = YEAR(GETDATE())";
+
+                string universityApplicationQuery = @"SELECT * FROM UniversityApplication
+                               WHERE ApplicationYear = YEAR(GETDATE())
+                               AND
+                               ApplicationStatusID = 2";
+
+                DataRow fundRow = GetDataTable(BBDFund, connection).Rows[0];
+                decimal TotalBudget = decimal.Parse(fundRow["AmountRemaining"].ToString());
+
+
+                DataTable universityApplicationData = GetDataTable(universityApplicationQuery, connection);
+
+
+                decimal universityBudget = TotalBudget / universityApplicationData.Rows.Count;
+
+
+                foreach (DataRow row in universityApplicationData.Rows)
                 {
-                    connection.Open();
-                    using (var command = new SqlCommand("EXEC [dbo].[AllocateFundsToUniversities]", connection))
-                    {
-                        command.ExecuteNonQuery();
-                    }
+
+                    string insert = @"INSERT INTO [dbo].BursaryAllocations (UniversityID, 
+                   AmountAlloc, AllocationYear, UniversityApplicationID)
+                   VALUES (@UniversityID, @AmountAlloc, @AllocationYear, @UniversityApplicationID)";
+
+                    SqlCommand command = new SqlCommand(insert, connection);
+                    command.Parameters.AddWithValue("@UniversityID", int.Parse(row["UniversityID"].ToString()));
+                    command.Parameters.AddWithValue("@AmountAlloc", universityBudget);
+                    command.Parameters.AddWithValue("@AllocationYear", DateTime.Now.Year);
+                    command.Parameters.AddWithValue("@UniversityApplicationID", int.Parse(row["ApplicationID"].ToString()));
+
+                    command.ExecuteNonQuery();
                 }
 
-                return Ok("Funds allocated to universities successfully");
+
+                return Ok("Funds have been allocated to all");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, $"An error occurred: {ex.StackTrace}");
             }
         }
+
+
 
 
     }
