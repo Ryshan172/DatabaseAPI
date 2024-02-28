@@ -275,7 +275,7 @@ namespace DatabaseApiCode.Controllers
                         JOIN Universities
                         ON StudentsTable.UniversityID = Universities.UniversityID
                         WHERE StudentsTable.StudentIDNum = @StudentIDNum";
-                    var command = new SqlCommand(sql, connection);
+                    SqlCommand command = new SqlCommand(sql, connection);
                     
                     command.Parameters.AddWithValue("@StudentIDNum", IdNumber);
 
@@ -284,14 +284,14 @@ namespace DatabaseApiCode.Controllers
                             if (await reader.ReadAsync())
                             {
                                 
-                                return Ok(new {
+                                return Ok(new ProStudentModel{
                                     Amount = reader.GetDecimal(0),
                                     AllocationYear = reader.GetInt32(1),
                                     StudentMarks = reader.GetInt32(2),
                                     CourseYear = reader.GetInt32(3),
                                     ApplicationStatusID = reader.GetInt32(4),
                                     AllocationID = reader.GetInt32(5),
-                                    FIrstName = reader.GetString(6),
+                                    FirstName = reader.GetString(6),
                                     LastName = reader.GetString(7),
                                     Email = reader.GetString(8),
                                     PhoneNumber = reader.GetString(9),
@@ -301,8 +301,8 @@ namespace DatabaseApiCode.Controllers
                                     Ethnicity = reader.GetString(13),
                                     Gender = reader.GetString(14),
                                     University = reader.GetString(15)
-                                }); ;
-                        ;
+                                }); 
+                        
                             }
                             else
                             {
@@ -314,9 +314,89 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.StackTrace}");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+
+        [HttpGet("GetAllStudentAllocationsPro")]
+        public async Task<IActionResult> GetAllStudentAllocationsPro()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string sql = @"SELECT 
+                        StudentAllocations.Amount,
+                        StudentAllocations.AllocationYear AS ApplicationYear,
+                        StudentAllocations.StudentMarks,
+                        StudentAllocations.CourseYear,
+                        StudentAllocations.ApplicationStatusID,
+                        StudentAllocations.AllocationID,	
+                        Users.FirstName,
+                        Users.LastName,
+                        ContactDetails.Email,
+                        ContactDetails.PhoneNumber,
+                        StudentsTable.StudentIDNum,
+                        StudentsTable.DateOfBirth,
+                        Departments.Department,
+                        Ethnicity.Ethnicity,
+                        Genders.Gender,
+                        Universities.UniName AS University
+                        FROM StudentsTable
+                        JOIN StudentAllocations
+                        ON StudentsTable.StudentIDNum = StudentAllocations.StudentIDNum
+                        JOIN Users
+                        ON StudentsTable.UserID = Users.UserID
+                        JOIN ContactDetails
+                        ON ContactDetails.UserID = Users.UserID
+                        JOIN Ethnicity
+                        ON StudentsTable.EthnicityID = Ethnicity.EthnicityID
+                        JOIN Departments
+                        ON StudentsTable.DepartmentID = Departments.DepartmentID
+                        JOIN Genders
+                        ON StudentsTable.GenderID = Genders.GenderID
+                        JOIN Universities
+                        ON StudentsTable.UniversityID = Universities.UniversityID";
+                    SqlCommand command = new SqlCommand(sql, connection);
+                    var reader = await command.ExecuteReaderAsync();
+
+                        List<ProStudentModel> studentAllocations = new List<ProStudentModel>();
+                        while (await reader.ReadAsync())
+                        {
+                           ProStudentModel studentAllocation = new ProStudentModel
+                            {
+                                Amount = reader.GetDecimal(0),
+                                AllocationYear = reader.GetInt32(1),
+                                StudentMarks = reader.GetInt32(2),
+                                CourseYear = reader.GetInt32(3),
+                                ApplicationStatusID = reader.GetInt32(4),
+                                AllocationID = reader.GetInt32(5),
+                                FirstName = reader.GetString(6),
+                                LastName = reader.GetString(7),
+                                Email = reader.GetString(8),
+                                PhoneNumber = reader.GetString(9),
+                                StudentIdNumber = reader.GetString(10),
+                                DateOfBirth = reader.GetDateTime(11),
+                                Department = reader.GetString(12),
+                                Ethnicity = reader.GetString(13),
+                                Gender = reader.GetString(14),
+                                University = reader.GetString(15)
+                            };
+                            studentAllocations.Add(studentAllocation);
+                        }
+                        return Ok(studentAllocations);
+                    }
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
         // Search for Allocations By UniversityID 
         [HttpGet("university/{universityId}")]
