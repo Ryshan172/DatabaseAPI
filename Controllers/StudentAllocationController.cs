@@ -412,6 +412,49 @@ namespace DatabaseApiCode.Controllers
 
 
 
+        // Delete Student Allocation by ID
+        [HttpDelete("{allocationId}")]
+        public async Task<IActionResult> DeleteStudentAllocationById(int allocationId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if the allocation exists
+                    var checkSql = "SELECT COUNT(*) FROM StudentAllocations WHERE AllocationID = @AllocationID";
+                    using (var checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@AllocationID", allocationId);
+                        var allocationCount = (int)await checkCommand.ExecuteScalarAsync();
+
+                        if (allocationCount == 0)
+                        {
+                            return NotFound(); // Allocation with the specified ID not found
+                        }
+                    }
+
+                    // Delete the allocation
+                    var sql = "DELETE FROM StudentAllocations WHERE AllocationID = @AllocationID";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@AllocationID", allocationId);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return Ok("Student allocation deleted successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
 
     }
     
