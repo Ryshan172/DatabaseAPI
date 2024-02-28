@@ -51,6 +51,10 @@ namespace DatabaseApiCode.Models
         public int ApplicationStatusID {get; init;}
 
         public string UniName {get; init;}
+
+        public string StudentFirstName {get; init;}
+
+        public string StudentLastName {get; init;}
         
     }
 
