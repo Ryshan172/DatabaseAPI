@@ -233,6 +233,91 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        [HttpGet("GetStudentAllocationByIdPro/{IdNumber}")]
+        public async Task<IActionResult> GetStudentAllocationByIdPro(string IdNumber)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string sql = @"SELECT 
+                        StudentAllocations.Amount,
+                        StudentAllocations.AllocationYear AS ApplicationYear,
+                        StudentAllocations.StudentMarks,
+                        StudentAllocations.CourseYear,
+                        StudentAllocations.ApplicationStatusID,
+                        StudentAllocations.AllocationID,	
+                        Users.FirstName,
+                        Users.LastName,
+                        ContactDetails.Email,
+                        ContactDetails.PhoneNumber,
+                        StudentsTable.StudentIDNum,
+                        StudentsTable.DateOfBirth,
+                        Departments.Department,
+                        Ethnicity.Ethnicity,
+                        Genders.Gender,
+                        Universities.UniName AS University
+                        FROM StudentsTable
+                        JOIN StudentAllocations
+                        ON StudentsTable.StudentIDNum = StudentAllocations.StudentIDNum
+                        JOIN Users
+                        ON StudentsTable.UserID = Users.UserID
+                        JOIN ContactDetails
+                        ON ContactDetails.UserID = Users.UserID
+                        JOIN Ethnicity
+                        ON StudentsTable.EthnicityID = Ethnicity.EthnicityID
+                        JOIN Departments
+                        ON StudentsTable.DepartmentID = Departments.DepartmentID
+                        JOIN Genders
+                        ON StudentsTable.GenderID = Genders.GenderID
+                        JOIN Universities
+                        ON StudentsTable.UniversityID = Universities.UniversityID
+                        WHERE StudentsTable.StudentIDNum = @StudentIDNum";
+                    var command = new SqlCommand(sql, connection);
+                    
+                    command.Parameters.AddWithValue("@StudentIDNum", IdNumber);
+
+                    var reader = await command.ExecuteReaderAsync();
+                        
+                            if (await reader.ReadAsync())
+                            {
+                                
+                                return Ok(new {
+                                    Amount = reader.GetDecimal(0),
+                                    AllocationYear = reader.GetInt32(1),
+                                    StudentMarks = reader.GetInt32(2),
+                                    CourseYear = reader.GetInt32(3),
+                                    ApplicationStatusID = reader.GetInt32(4),
+                                    AllocationID = reader.GetInt32(5),
+                                    FIrstName = reader.GetString(6),
+                                    LastName = reader.GetString(7),
+                                    Email = reader.GetString(8),
+                                    PhoneNumber = reader.GetString(9),
+                                    StudentIdNumber = reader.GetString(10),
+                                    DateOfBirth = reader.GetDateTime(11),
+                                    Department = reader.GetString(12),
+                                    Ethnicity = reader.GetString(13),
+                                    Gender = reader.GetString(14),
+                                    University = reader.GetString(15)
+                                }); ;
+                        ;
+                            }
+                            else
+                            {
+                                return NotFound(); // Allocation with the specified ID not found
+                            }
+                        
+                    }
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.StackTrace}");
+            }
+        }
+
         // Search for Allocations By UniversityID 
         [HttpGet("university/{universityId}")]
         public async Task<IActionResult> GetStudentAllocationsByUniversityId(int universityId)
