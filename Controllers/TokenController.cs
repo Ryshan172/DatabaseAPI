@@ -30,7 +30,7 @@ namespace DatabaseApiCode.Controllers
             //DateTime expiryDate = DateTime.Now.AddSeconds(10);
 
             // Construct the URL with the token
-            string url = $"https://ukukhulabursary.netlify.app/upload-documents?token={token}";
+            string url = $"https://ukukhulabursary.netlify.app/Student/Documents?token={token}";
 
             // Save the token and URL in the database
             using (SqlConnection connection = new SqlConnection(_connectionString))
