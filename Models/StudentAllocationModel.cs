@@ -98,6 +98,7 @@ namespace DatabaseApiCode.Models
         public string Ethnicity { get; init; }
         public string Gender { get; init; }
         public string University { get; init; }
+        public int UniversityID { get; init; }
     }
 
 
