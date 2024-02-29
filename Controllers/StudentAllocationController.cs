@@ -118,7 +118,7 @@
                             ApplicationStatusID = @ApplicationStatusID, 
                             StudentMarks = @StudentMarks,
                             CourseYear = @CourseYear
-                        WHERE StudentIDNum = @StudentIDNum";
+                        WHERE AllocationID = @AllocationID";
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@Amount", studentAllocationModel.Amount);
@@ -127,6 +127,7 @@
                         command.Parameters.AddWithValue("@StudentMarks", studentAllocationModel.StudentMarks);
                         command.Parameters.AddWithValue("@CourseYear", studentAllocationModel.CourseYear);
                         command.Parameters.AddWithValue("@StudentIDNum", studentAllocationModel.StudentIDNum);
+                        command.Parameters.AddWithValue("@AllocationID", studentAllocationModel.AllocationID);
 
                         int rowsAffected = await command.ExecuteNonQueryAsync();
                         if (rowsAffected == 0)
