@@ -78,6 +78,8 @@ namespace DatabaseApiCode.Models
         public int StudentMarks {get; init;}
         public int CourseYear {get; init;}
         public int ApplicationStatusID {get; init;}
+
+        public int AllocationID { get; set; }
     }
 
     public class ProStudentModel {
