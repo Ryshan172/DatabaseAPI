@@ -7,16 +7,16 @@ namespace DatabaseApiCode.Models
     {
         public int ApplicationID { get; init; }
 
-        public int ApplicationStatusID { get; init; }
+        public int ApplicationStatusID { get; init; } = 1;
 
         public decimal AmountRequested { get; init; }
 
         public int UniversityID {get; init; }
 
-        public int ApplicationYear {get; init; }
+        public int ApplicationYear {get; init; } = DateTime.Now.Year;
 
         // Actually an int because 1 or 0 even though BIT on Database
-        public bool IsLocked {get; init; }
+        public bool IsLocked {get; init; } = true;
         
 
     }
