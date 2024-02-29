@@ -1,5 +1,4 @@
-
-namespace DatabaseApiCode.Controllers
+ namespace DatabaseApiCode.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -258,7 +257,8 @@ namespace DatabaseApiCode.Controllers
                         Departments.Department,
                         Ethnicity.Ethnicity,
                         Genders.Gender,
-                        Universities.UniName AS University
+                        Universities.UniName AS University,
+                        Universities.UniversityID AS UniversityID
                         FROM StudentsTable
                         JOIN StudentAllocations
                         ON StudentsTable.StudentIDNum = StudentAllocations.StudentIDNum
@@ -300,7 +300,8 @@ namespace DatabaseApiCode.Controllers
                                     Department = reader.GetString(12),
                                     Ethnicity = reader.GetString(13),
                                     Gender = reader.GetString(14),
-                                    University = reader.GetString(15)
+                                    University = reader.GetString(15),
+                                    UniversityID = reader.GetInt32(16)
                                 }); 
                         
                             }
@@ -344,7 +345,8 @@ namespace DatabaseApiCode.Controllers
                         Departments.Department,
                         Ethnicity.Ethnicity,
                         Genders.Gender,
-                        Universities.UniName AS University
+                        Universities.UniName AS University,
+                        Universities.UniversityID AS UniversityID
                         FROM StudentsTable
                         JOIN StudentAllocations
                         ON StudentsTable.StudentIDNum = StudentAllocations.StudentIDNum
@@ -383,8 +385,10 @@ namespace DatabaseApiCode.Controllers
                                 Department = reader.GetString(12),
                                 Ethnicity = reader.GetString(13),
                                 Gender = reader.GetString(14),
-                                University = reader.GetString(15)
-                            };
+                                University = reader.GetString(15),
+                               UniversityID = reader.GetInt32(16)
+
+                           };
                             studentAllocations.Add(studentAllocation);
                         }
                         return Ok(studentAllocations);
