@@ -251,5 +251,49 @@ namespace DatabaseApiCode.Controllers
 
 
 
+        // Delete University Application by ID
+        [HttpDelete("{applicationId}")]
+        public async Task<IActionResult> DeleteUniversityApplicationById(int applicationId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if the application exists
+                    var checkSql = "SELECT COUNT(*) FROM UniversityApplication WHERE ApplicationID = @ApplicationID";
+                    using (var checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@ApplicationID", applicationId);
+                        var allocationCount = (int)await checkCommand.ExecuteScalarAsync();
+
+                        if (allocationCount == 0)
+                        {
+                            return NotFound(); // Application with the specified ID not found
+                        }
+                    }
+
+                    // Delete the allocation
+                    var sql = "DELETE FROM UniversityApplication WHERE ApplicationID = @ApplicationID";
+                    using (var command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@ApplicationID", applicationId);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    return Ok("University Application deleted successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
+
     }
 }
