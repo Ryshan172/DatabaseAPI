@@ -306,6 +306,8 @@ namespace DatabaseApiCode.Controllers
 
                 await connection.OpenAsync();
 
+                
+
                 string BBDFund = @"SELECT AmountRemaining FROM BBDAdminBalance
                                    WHERE BudgetYear = YEAR(GETDATE())";
 
@@ -314,34 +316,54 @@ namespace DatabaseApiCode.Controllers
                                AND
                                ApplicationStatusID = 2";
 
+                string updateBBDBalance = @"UPDATE BBDAdminBalance
+                                            SET AmountAllocated = @Amount
+                                            WHERE BudgetYear = YEAR(GETDATE())";
+
+                
+
+
+
                 DataRow fundRow = GetDataTable(BBDFund, connection).Rows[0];
                 decimal TotalBudget = decimal.Parse(fundRow["AmountRemaining"].ToString());
-
-
-                DataTable universityApplicationData = GetDataTable(universityApplicationQuery, connection);
-
-
-                decimal universityBudget = TotalBudget / universityApplicationData.Rows.Count;
-
-
-                foreach (DataRow row in universityApplicationData.Rows)
+                if (TotalBudget>0)
                 {
 
-                    string insert = @"INSERT INTO [dbo].BursaryAllocations (UniversityID, 
+
+                    SqlCommand updateCommand = new SqlCommand(updateBBDBalance, connection);
+                    DataTable universityApplicationData = GetDataTable(universityApplicationQuery, connection);
+                    decimal universityBudget = TotalBudget / universityApplicationData.Rows.Count;
+
+                    updateCommand.Parameters.AddWithValue("@Amount", TotalBudget);
+                    updateCommand.ExecuteNonQuery();
+
+
+                    foreach (DataRow row in universityApplicationData.Rows)
+                    {
+
+                        string insert = @"INSERT INTO [dbo].BursaryAllocations (UniversityID, 
                    AmountAlloc, AllocationYear, UniversityApplicationID)
                    VALUES (@UniversityID, @AmountAlloc, @AllocationYear, @UniversityApplicationID)";
 
-                    SqlCommand command = new SqlCommand(insert, connection);
-                    command.Parameters.AddWithValue("@UniversityID", int.Parse(row["UniversityID"].ToString()));
-                    command.Parameters.AddWithValue("@AmountAlloc", universityBudget);
-                    command.Parameters.AddWithValue("@AllocationYear", DateTime.Now.Year);
-                    command.Parameters.AddWithValue("@UniversityApplicationID", int.Parse(row["ApplicationID"].ToString()));
+                        SqlCommand command = new SqlCommand(insert, connection);
+                        command.Parameters.AddWithValue("@UniversityID", int.Parse(row["UniversityID"].ToString()));
+                        command.Parameters.AddWithValue("@AmountAlloc", universityBudget);
+                        command.Parameters.AddWithValue("@AllocationYear", DateTime.Now.Year);
+                        command.Parameters.AddWithValue("@UniversityApplicationID", int.Parse(row["ApplicationID"].ToString()));
 
-                    command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
+                    }
+
+
+
+                    return Ok("Funds have been allocated to all");
+
+
+                }
+                else {
+                    return StatusCode(500, $"An error occurred: Insufficient funds");
                 }
 
-
-                return Ok("Funds have been allocated to all");
             }
             catch (Exception ex)
             {
