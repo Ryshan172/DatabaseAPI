@@ -14,6 +14,7 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        // Main method for creating a university application
         [HttpPost]
         public async Task<IActionResult> AddUniversityApplication([FromBody] UniversityApplicationModel universityApplicationModel)
         {
@@ -30,14 +31,14 @@ namespace DatabaseApiCode.Controllers
 
                     var sql = @"
                         INSERT INTO UniversityApplication (ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked)
-                        VALUES (@ApplicationStatusID, @AmountRequested, @UniversityID, @ApplicationYear, @IsLocked)";
+                        VALUES (1, @AmountRequested, @UniversityID, YEAR(GETDATE()), 1)";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ApplicationStatusID", universityApplicationModel.ApplicationStatusID);
+                        // command.Parameters.AddWithValue("@ApplicationStatusID", universityApplicationModel.ApplicationStatusID);
                         command.Parameters.AddWithValue("@AmountRequested", universityApplicationModel.AmountRequested);
                         command.Parameters.AddWithValue("@UniversityID", universityApplicationModel.UniversityID);
-                        command.Parameters.AddWithValue("@ApplicationYear", universityApplicationModel.ApplicationYear);
-                        command.Parameters.AddWithValue("@IsLocked", universityApplicationModel.IsLocked);
+                        // command.Parameters.AddWithValue("@ApplicationYear", universityApplicationModel.ApplicationYear);
+                        // command.Parameters.AddWithValue("@IsLocked", universityApplicationModel.IsLocked);
                         
                         await command.ExecuteNonQueryAsync();
                     }
