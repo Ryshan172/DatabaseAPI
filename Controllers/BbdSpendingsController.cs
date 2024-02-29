@@ -105,12 +105,6 @@ namespace DatabaseApiCode.Controllers
             decimal Remaining = decimal.Parse(Row["AmountRemaining"].ToString());
             int year = int.Parse(Row["BudgetYear"].ToString());
 
-
-
-
-
-
-
             return Ok(new
             {
                 Allocated = Allocated,
@@ -122,6 +116,92 @@ namespace DatabaseApiCode.Controllers
         }
 
 
+        [HttpGet("GetTotalSpentOnAllUniversities")]
+        public IActionResult GetTotalSpentOnAllUniversities()
+        {
+
+            DataTable GetDataTable(string query, SqlConnection connection)
+            {
+                DataTable dataTable = new DataTable();
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                adapter.Fill(dataTable);
+                return dataTable;
+            }
+
+            string query = @"SELECT 
+                            SUM(B.AmountAlloc) AS TotalAmountAlloc,
+                            U.UniName
+                            FROM 
+                            BursaryAllocations B
+                            INNER JOIN 
+                            Universities U ON B.UniversityID = U.UniversityID
+                            LEFT JOIN 
+                            BBDAdminBalance BB ON B.AllocationYear = BB.BudgetYear
+                            GROUP BY 
+                            U.UniName";
+
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            List<AllocationBudgetModel> bursaries = new List<AllocationBudgetModel>();
+            DataTable Rows = GetDataTable(query, connection);
+            foreach (DataRow Row in Rows.Rows)
+            {
+                bursaries.Add(new AllocationBudgetModel
+                {
+                    UniName = Row["UniName"].ToString(),
+                    AmountAllocated = decimal.Parse(Row["TotalAmountAlloc"].ToString())
+
+                });
+            }
+            return Ok(bursaries);
+
+
+        }
+
+
+
+
+        [HttpGet("GetUniversityPaymentHistory")]
+        public IActionResult GetUniversityPaymentHistory()
+        {
+
+            DataTable GetDataTable(string query, SqlConnection connection)
+            {
+                DataTable dataTable = new DataTable();
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                adapter.Fill(dataTable);
+                return dataTable;
+            }
+
+            string query = @"SELECT * FROM BursaryAllocations
+                            JOIN Universities
+                            ON BursaryAllocations.UniversityID = Universities.UniversityID";
+
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+            List<BursaryHistoryModel> bursaries = new List<BursaryHistoryModel>();
+            DataTable Rows = GetDataTable(query, connection);
+            foreach (DataRow Row in Rows.Rows)
+            {
+                bursaries.Add(new BursaryHistoryModel
+                {
+                    AmountAllocated = decimal.Parse(Row["AmountAlloc"].ToString()),
+                    AllocationYear = int.Parse(Row["AllocationYear"].ToString()),
+                    UniName = Row["UniName"].ToString(),
+                    AllocationID = int.Parse(Row["AllocationID"].ToString())
+
+
+                });
+            }
+
+
+            return Ok(bursaries);
+        }
 
         // Add Money to the BBD Budget Table 
         [HttpPost]
