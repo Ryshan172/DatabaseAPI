@@ -18,94 +18,83 @@ namespace DatabaseApiCode.Controllers
         [HttpGet]
         public IActionResult GetUniversitySpendingsAndStudents(int allocationYear, int universityID)
         {
-            string query = @"
-                SELECT 
-                    U.UniName,
-                    SUM(B.AmountAlloc) AS TotalAmount
-                FROM 
-                    Universities U
-                INNER JOIN 
-                    BursaryAllocations B ON U.UniversityID = B.UniversityID
-                WHERE 
-                    B.AllocationYear = @AllocationYear AND
-                    U.UniversityID = @UniversityID
-                GROUP BY 
-                    U.UniName;
-
-                SELECT 
-                    U.UserID,
-                    U.FirstName,
-                    U.LastName,
-                    S.StudentIDNum,
-                    SA.Amount AS AllocationAmount
-                FROM 
-                    Users U
-                INNER JOIN 
-                    StudentsTable S ON U.UserID = S.UserID
-                INNER JOIN 
-                    StudentAllocations SA ON S.StudentIDNum = SA.StudentIDNum
-                INNER JOIN 
-                    BursaryAllocations B ON SA.AllocationID = B.AllocationID
-                WHERE 
-                    B.AllocationYear = @AllocationYear AND
-                    B.UniversityID = @UniversityID;";
-
             decimal totalAmount = 0;
-            decimal AmountRemaining =0;
+            decimal amountRemaining = 0;
             List<StudentInfoModel> fundedStudents = new List<StudentInfoModel>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand command = new SqlCommand(query, connection))
+                connection.Open();
+
+                // Step 1: Get the total allocated amount for the university and year
+                string queryTotalAmount = @"
+                    SELECT SUM(ba.AmountAlloc) AS TotalAmount
+                    FROM BursaryAllocations ba
+                    INNER JOIN UniversityApplication ua ON ba.UniversityApplicationID = ua.ApplicationID
+                    WHERE ba.AllocationYear = @AllocationYear
+                    AND ua.UniversityID = @UniversityID";
+
+                SqlCommand commandTotalAmount = new SqlCommand(queryTotalAmount, connection);
+                commandTotalAmount.Parameters.AddWithValue("@AllocationYear", allocationYear);
+                commandTotalAmount.Parameters.AddWithValue("@UniversityID", universityID);
+
+                object result = commandTotalAmount.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
                 {
-                    command.Parameters.AddWithValue("@AllocationYear", allocationYear);
-                    command.Parameters.AddWithValue("@UniversityID", universityID);
+                    totalAmount = (decimal)result;
+                }
 
-                    connection.Open();
+                // Step 2: Get the funded students and their allocation amounts
+                string queryFundedStudents = @"
+                SELECT u.FirstName, u.LastName, st.StudentIDNum, sa.Amount AS AllocationAmount
+                FROM StudentAllocations sa
+                INNER JOIN StudentsTable st ON sa.StudentIDNum = st.StudentIDNum
+                INNER JOIN Users u ON st.UserID = u.UserID
+                WHERE sa.AllocationYear = @AllocationYear
+                AND st.UniversityID = @UniversityID";
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+
+                SqlCommand commandFundedStudents = new SqlCommand(queryFundedStudents, connection);
+                commandFundedStudents.Parameters.AddWithValue("@AllocationYear", allocationYear);
+                commandFundedStudents.Parameters.AddWithValue("@UniversityID", universityID);
+
+                using (SqlDataReader reader = commandFundedStudents.ExecuteReader())
+                {
+                    while (reader.Read())
                     {
-                        
-                        if (reader.Read())
+                        string firstName = reader["FirstName"].ToString().Trim();
+                        string lastName = reader["LastName"].ToString().Trim();
+                        string studentIDNum = reader["StudentIDNum"].ToString();
+                        decimal allocationAmount = Convert.ToDecimal(reader["AllocationAmount"]);
+
+                        fundedStudents.Add(new StudentInfoModel
                         {
-                            totalAmount = Convert.ToDecimal(reader["TotalAmount"]);
-                        }
-
-                        
-                        reader.NextResult();
-
-                    
-                        while (reader.Read())
-                        {
-                            string firstName = reader["FirstName"].ToString();
-                            string lastName = reader["LastName"].ToString();
-                            string studentIDNum = reader["StudentIDNum"].ToString();
-                            decimal allocationAmount = Convert.ToDecimal(reader["AllocationAmount"]);
-                            AmountRemaining = totalAmount - allocationAmount;
-
-                            fundedStudents.Add(new StudentInfoModel
-                            {   
-                                FirstName = firstName,
-                                LastName = lastName,
-                                AllocationAmount = allocationAmount,
-                                // AmountRemaining = AmountRemaining
-                                StudentIDNum = studentIDNum
-
-                            });
-                        }
+                            FirstName = firstName,
+                            LastName = lastName,
+                            StudentIDNum = studentIDNum,
+                            AllocationAmount = allocationAmount
+                        });
                     }
                 }
             }
 
-            return Ok(new UniversitySpendingsModel()
+            // Calculate the remaining amount
+            amountRemaining = totalAmount - fundedStudents.Sum(student => student.AllocationAmount);
+
+            // Create and return the response model
+            UniversitySpendingsModel response = new UniversitySpendingsModel
             {
                 AllocationYear = allocationYear,
                 UniversityID = universityID,
                 TotalAmount = totalAmount,
-                FundedStudents = fundedStudents,
-                AmountRemaining =AmountRemaining ,
+                AmountRemaining = amountRemaining,
+                FundedStudents = fundedStudents
+            };
 
-            });
+            return Ok(response);
         }
+
+
+    
     }
 }
