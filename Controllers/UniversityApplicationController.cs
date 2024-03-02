@@ -14,7 +14,7 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        // Main method for creating a university application
+        // Main method for adding a university Application for funding from bbd 
         [HttpPost]
         public async Task<IActionResult> AddUniversityApplication([FromBody] UniversityApplicationModel universityApplicationModel)
         {
@@ -29,16 +29,28 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
+                    // Check if an entry already exists for the UniversityID and Year
+                    var checkSql = "SELECT COUNT(*) FROM UniversityApplication WHERE UniversityID = @UniversityID AND ApplicationYear = YEAR(GETDATE())";
+                    using (var checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@UniversityID", universityApplicationModel.UniversityID);
+
+                        int existingCount = (int)await checkCommand.ExecuteScalarAsync();
+                        if (existingCount > 0)
+                        {
+                            // Entry already exists, return a conflict response
+                            return Conflict("An entry for the same UniversityID for the current year already exists in the UniversityApplication table.");
+                        }
+                    }
+
+                    // Entry doesn't exist, proceed with insertion
                     var sql = @"
                         INSERT INTO UniversityApplication (ApplicationStatusID, AmountRequested, UniversityID, ApplicationYear, IsLocked)
                         VALUES (1, @AmountRequested, @UniversityID, YEAR(GETDATE()), 1)";
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        // command.Parameters.AddWithValue("@ApplicationStatusID", universityApplicationModel.ApplicationStatusID);
                         command.Parameters.AddWithValue("@AmountRequested", universityApplicationModel.AmountRequested);
                         command.Parameters.AddWithValue("@UniversityID", universityApplicationModel.UniversityID);
-                        // command.Parameters.AddWithValue("@ApplicationYear", universityApplicationModel.ApplicationYear);
-                        // command.Parameters.AddWithValue("@IsLocked", universityApplicationModel.IsLocked);
                         
                         await command.ExecuteNonQueryAsync();
                     }
@@ -50,8 +62,8 @@ namespace DatabaseApiCode.Controllers
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-
         }
+
 
 
         [HttpGet]

@@ -74,6 +74,22 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
+                    // Check if the entry already exists
+                    var checkSql = "SELECT COUNT(*) FROM BursaryAllocations WHERE AllocationYear = @AllocationYear AND UniversityApplicationID = @UniversityApplicationID";
+                    using (var checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@AllocationYear", bursaryallocation.AllocationYear);
+                        checkCommand.Parameters.AddWithValue("@UniversityApplicationID", bursaryallocation.UniversityApplicationID);
+
+                        int existingCount = (int)await checkCommand.ExecuteScalarAsync();
+                        if (existingCount > 0)
+                        {
+                            // Entry already exists, return a conflict response
+                            return Conflict("An entry with the same UniversityApplicationID for the AllocationYear already exists.");
+                        }
+                    }
+
+                    // Entry doesn't exist, proceed with insertion
                     var sql = @"
                         INSERT INTO BursaryAllocations (AmountAlloc, AllocationYear, UniversityID, UniversityApplicationID)
                         VALUES (@AmountAlloc, @AllocationYear, @UniversityID, @UniversityApplicationID)";
@@ -84,7 +100,6 @@ namespace DatabaseApiCode.Controllers
                         command.Parameters.AddWithValue("@UniversityID", bursaryallocation.UniversityID);
                         command.Parameters.AddWithValue("@UniversityApplicationID", bursaryallocation.UniversityApplicationID);
 
-                        
                         await command.ExecuteNonQueryAsync();
                     }
                 }
@@ -96,6 +111,7 @@ namespace DatabaseApiCode.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
     }
 }
 
