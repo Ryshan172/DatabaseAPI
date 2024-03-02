@@ -295,6 +295,56 @@ namespace DatabaseApiCode.Controllers
             }
         }
 
+
+        [HttpGet("universityUserDetails/{userId}")]
+        public async Task<IActionResult> GetUniversityUserDetails(int userId)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = @"
+                        SELECT DepartmentID, UniversityID
+                        FROM UniversityUser
+                        WHERE UserID = @UserId";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserId", userId);
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (reader.Read())
+                            {
+                                var departmentId = reader.GetInt32(reader.GetOrdinal("DepartmentID"));
+                                var universityId = reader.GetInt32(reader.GetOrdinal("UniversityID"));
+
+                                var userDetails = new
+                                {
+                                    DepartmentID = departmentId,
+                                    UniversityID = universityId,
+                                    UserID = userId
+                                };
+
+                                return Ok(userDetails);
+                            }
+                            else
+                            {
+                                return NotFound("User not found");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
     }
 
 
