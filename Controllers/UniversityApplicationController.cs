@@ -170,7 +170,7 @@ namespace DatabaseApiCode.Controllers
                         if (universityId.HasValue)
                         {
                             // Query to get the UniversityApplication based on the UniversityID
-                            var sql = "SELECT ApplicationID, UniversityID, ApplicationStatusID, AmountRequested, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = @UniversityID";
+                            var sql = "SELECT ApplicationID, UniversityID, ApplicationStatusID, AmountRequested, ApplicationYear, IsLocked FROM UniversityApplication WHERE UniversityID = 1 AND ApplicationYear = YEAR(GETDATE())";
                             using (var command = new SqlCommand(sql, connection))
                             {
                                 command.Parameters.AddWithValue("@UniversityID", universityId.Value);
