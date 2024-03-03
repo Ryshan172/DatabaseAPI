@@ -176,17 +176,17 @@ namespace DatabaseApiCode.Controllers
         }
 
 
-        [HttpGet("users/{roleName}")]
+        [HttpGet("users/{roleid}")]
         [ProducesResponseType(typeof(List<UserWithContactModel>), 200)]
-        public IActionResult GetUsersByRoleName(string roleName)
+        public IActionResult GetUsersByRoleID(int roleid)
         {
             List<UserWithContactModel> users = new List<UserWithContactModel>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string roleIdQuery = "SELECT RoleID FROM Roles WHERE RoleName = @RoleName";
+                string roleIdQuery = "SELECT RoleID FROM Roles WHERE RoleID = @RoleID";
                 SqlCommand roleIdCommand = new SqlCommand(roleIdQuery, connection);
-                roleIdCommand.Parameters.AddWithValue("@RoleName", roleName);
+                roleIdCommand.Parameters.AddWithValue("@RoleID", roleid);
 
                 string usersQuery = @"
                     SELECT u.UserID, u.FirstName, u.LastName, u.RoleID, c.Email, c.PhoneNumber
@@ -202,7 +202,7 @@ namespace DatabaseApiCode.Controllers
                     int roleId = Convert.ToInt32(roleIdCommand.ExecuteScalar());
                     if (roleId == 0)
                     {
-                        return NotFound($"Role '{roleName}' not found.");
+                        return NotFound($"Role '{roleid}' not found.");
                     }
 
                     // Retrieve users with the given RoleID
@@ -216,10 +216,10 @@ namespace DatabaseApiCode.Controllers
                         UserWithContactModel user = new UserWithContactModel
                         {
                             UserID = reader.GetInt32(0),
-                            FirstName = reader.GetString(1),
-                            LastName = reader.GetString(2),
+                            FirstName = reader.GetString(1).Trim(),
+                            LastName = reader.GetString(2).Trim(),
                             RoleID = reader.GetInt32(3),
-                            Email = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            Email = reader.IsDBNull(4) ? null : reader.GetString(4).Trim(),
                             PhoneNumber = reader.IsDBNull(5) ? null : reader.GetString(5)
                         };
                         users.Add(user);
