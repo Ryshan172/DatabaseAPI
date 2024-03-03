@@ -27,6 +27,21 @@ namespace DatabaseApiCode.Controllers
                 {
                     await connection.OpenAsync();
 
+                    // Check if the university name already exists
+                    var checkSql = "SELECT COUNT(*) FROM Universities WHERE UniName = @UniName";
+                    using (var checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@UniName", universitiesModel.UniName);
+                        var existingCount = (int)await checkCommand.ExecuteScalarAsync();
+
+                        // If a university with the same name already exists, return a conflict response
+                        if (existingCount > 0)
+                        {
+                            return Conflict("University with the same name already exists");
+                        }
+                    }
+
+                    // If the name is not already in the database, insert the new university
                     var sql = "INSERT INTO Universities (UniName) VALUES (@UniName)";
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -42,6 +57,7 @@ namespace DatabaseApiCode.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
 
 
         [HttpGet]
@@ -64,7 +80,7 @@ namespace DatabaseApiCode.Controllers
                             {   
                                 // Needed to change the model to decimal
                                 UniversityID = reader.GetInt32(0),
-                                UniName = reader.GetString(1),
+                                UniName = reader.GetString(1).Trim(),
                                 
                             };
                             universitiesList.Add(universitiesGet);
