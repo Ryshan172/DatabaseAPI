@@ -527,8 +527,8 @@
                                     CourseYear = reader.GetInt32(5),
                                     ApplicationStatusID = reader.GetInt32(6),
                                     UniName = reader.GetString(7), // Retrieve UniName from the query result
-                                    StudentFirstName = reader.GetString(8),
-                                    StudentLastName = reader.GetString(9),
+                                    StudentFirstName = reader.GetString(8).Trim(),
+                                    StudentLastName = reader.GetString(9).Trim(),
                                 };
                                 studentAllocations.Add(hodstudentAllocation);
                             }
