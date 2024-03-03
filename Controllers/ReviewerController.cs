@@ -31,7 +31,16 @@ namespace DatabaseApiCode.Controllers
                     using (var command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@UserID", reviewerModel.UserID);
-                        command.Parameters.AddWithValue("@StudentAllocationID", reviewerModel.StudentAllocationID);
+                        //command.Parameters.AddWithValue("@StudentAllocationID", reviewerModel.StudentAllocationID);
+
+                        if (reviewerModel.StudentAllocationID.HasValue)
+                        {
+                            command.Parameters.AddWithValue("@StudentAllocationID", reviewerModel.StudentAllocationID.Value);
+                        }
+                        else
+                        {
+                            command.Parameters.AddWithValue("@StudentAllocationID", DBNull.Value);
+                        }
 
                         if (reviewerModel.UniversityApplicationID.HasValue)
                         {
