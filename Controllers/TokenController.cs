@@ -53,13 +53,12 @@ namespace DatabaseApiCode.Controllers
                     }
                     else
                     {
-                        return StatusCode(500, "Failed to generate token.");
+                        return BadRequest("Failed to generate token.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while processing the request.");
+                    return BadRequest("An error occurred while processing the request.");
                 }
             }
         }
@@ -122,8 +121,8 @@ namespace DatabaseApiCode.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while processing the request.");
+
+                    return BadRequest("An error occurred while processing the request.");
                 }
             }
         }

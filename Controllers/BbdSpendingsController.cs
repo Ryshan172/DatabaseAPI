@@ -20,7 +20,8 @@ namespace DatabaseApiCode.Controllers
         [HttpGet("{allocationYear}")]
         public IActionResult GetSpendingForYear(int allocationYear)
         {
-            string query = @"
+            try {
+                string query = @"
                 SELECT 
                     SUM(B.AmountAlloc) AS TotalAmountAlloc,
                     U.UniName,
@@ -36,100 +37,109 @@ namespace DatabaseApiCode.Controllers
                 GROUP BY 
                     U.UniName, BB.Budget";
 
-            decimal totalAmountAllocated = 0;
-            decimal totalBudget = 0;
-            Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
+                decimal totalAmountAllocated = 0;
+                decimal totalBudget = 0;
+                Dictionary<string, decimal> universityAllocations = new Dictionary<string, decimal>();
 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@AllocationYear", allocationYear);
-
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.AddWithValue("@AllocationYear", allocationYear);
+
+                        connection.Open();
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            string universityName = reader["UniName"].ToString();
-                            decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
-
-                            // Retrieve budget if available
-                            if (reader["TotalBudget"] != DBNull.Value)
+                            while (reader.Read())
                             {
-                                totalBudget = Convert.ToDecimal(reader["TotalBudget"]);
-                            }
+                                string universityName = reader["UniName"].ToString();
+                                decimal amountAllocated = Convert.ToDecimal(reader["TotalAmountAlloc"]);
 
-                            universityAllocations.Add(universityName, amountAllocated);
-                            totalAmountAllocated += amountAllocated;
+                                // Retrieve budget if available
+                                if (reader["TotalBudget"] != DBNull.Value)
+                                {
+                                    totalBudget = Convert.ToDecimal(reader["TotalBudget"]);
+                                }
+
+                                universityAllocations.Add(universityName, amountAllocated);
+                                totalAmountAllocated += amountAllocated;
+                            }
                         }
                     }
                 }
-            }
 
-            return Ok(new
-            {
-                AllocationYear = allocationYear,
-                TotalAmountAllocated = totalAmountAllocated,
-                TotalBudget = totalBudget,
-                AmountRemaining = totalBudget - totalAmountAllocated,
-                UniversityAllocations = universityAllocations
-            });
+                return Ok(new
+                {
+                    AllocationYear = allocationYear,
+                    TotalAmountAllocated = totalAmountAllocated,
+                    TotalBudget = totalBudget,
+                    AmountRemaining = totalBudget - totalAmountAllocated,
+                    UniversityAllocations = universityAllocations
+                });
+            } catch(Exception e) {
+                return NotFound("Could not retrieve spending for "+allocationYear);
+            }
+            
         }
 
 
         [HttpGet("GetCurrentBudget")]
         public IActionResult GetCurrentBudget()
         {
-
-            DataTable GetDataTable(string query, SqlConnection connection)
+            try
             {
-                DataTable dataTable = new DataTable();
-                SqlCommand command = new SqlCommand(query, connection);
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                adapter.Fill(dataTable);
-                return dataTable;
-            }
+                DataTable GetDataTable(string query, SqlConnection connection)
+                {
+                    DataTable dataTable = new DataTable();
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(dataTable);
+                    return dataTable;
+                }
 
-            string query = @"SELECT * FROM BBDAdminBalance
+                string query = @"SELECT * FROM BBDAdminBalance
                             WHERE BudgetYear = YEAR(GETDATE())";
 
 
-            SqlConnection connection = new SqlConnection(_connectionString);                
-            connection.Open();
+                SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
 
-            DataRow Row = GetDataTable(query, connection).Rows[0];
-            decimal Allocated = decimal.Parse(Row["AmountAllocated"].ToString());
-            decimal Budget = decimal.Parse(Row["Budget"].ToString());
-            decimal Remaining = decimal.Parse(Row["AmountRemaining"].ToString());
-            int year = int.Parse(Row["BudgetYear"].ToString());
+                DataRow Row = GetDataTable(query, connection).Rows[0];
+                decimal Allocated = decimal.Parse(Row["AmountAllocated"].ToString());
+                decimal Budget = decimal.Parse(Row["Budget"].ToString());
+                decimal Remaining = decimal.Parse(Row["AmountRemaining"].ToString());
+                int year = int.Parse(Row["BudgetYear"].ToString());
 
-            return Ok(new
-            {
-                Allocated = Allocated,
-                Budget = Budget,
-                Remaining = Remaining,
-                year = year,
+                return Ok(new
+                {
+                    Allocated = Allocated,
+                    Budget = Budget,
+                    Remaining = Remaining,
+                    year = year,
 
-            });
+                });
+            } catch (Exception e) {
+                return NotFound("Could not retrieve current budget");
+            }
+           
         }
 
 
         [HttpGet("GetTotalSpentOnAllUniversities")]
         public IActionResult GetTotalSpentOnAllUniversities()
         {
+            try {
+                DataTable GetDataTable(string query, SqlConnection connection)
+                {
+                    DataTable dataTable = new DataTable();
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(dataTable);
+                    return dataTable;
+                }
 
-            DataTable GetDataTable(string query, SqlConnection connection)
-            {
-                DataTable dataTable = new DataTable();
-                SqlCommand command = new SqlCommand(query, connection);
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                adapter.Fill(dataTable);
-                return dataTable;
-            }
-
-            string query = @"SELECT 
+                string query = @"SELECT 
                             SUM(B.AmountAlloc) AS TotalAmountAlloc,
                             U.UniName
                             FROM 
@@ -142,22 +152,26 @@ namespace DatabaseApiCode.Controllers
                             U.UniName";
 
 
-            SqlConnection connection = new SqlConnection(_connectionString);
-            connection.Open();
+                SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
 
-            List<AllocationBudgetModel> bursaries = new List<AllocationBudgetModel>();
-            DataTable Rows = GetDataTable(query, connection);
-            foreach (DataRow Row in Rows.Rows)
-            {
-                bursaries.Add(new AllocationBudgetModel
+                List<AllocationBudgetModel> bursaries = new List<AllocationBudgetModel>();
+                DataTable Rows = GetDataTable(query, connection);
+                foreach (DataRow Row in Rows.Rows)
                 {
-                    UniName = Row["UniName"].ToString(),
-                    AmountAllocated = decimal.Parse(Row["TotalAmountAlloc"].ToString())
+                    bursaries.Add(new AllocationBudgetModel
+                    {
+                        UniName = Row["UniName"].ToString(),
+                        AmountAllocated = decimal.Parse(Row["TotalAmountAlloc"].ToString())
 
-                });
+                    });
+                }
+                return Ok(bursaries);
             }
-            return Ok(bursaries);
-
+            catch{
+                return NotFound("Could not retrieve total spent on all universities");
+            }
+           
 
         }
 
@@ -167,40 +181,44 @@ namespace DatabaseApiCode.Controllers
         [HttpGet("GetUniversityPaymentHistory")]
         public IActionResult GetUniversityPaymentHistory()
         {
+            try {
+                DataTable GetDataTable(string query, SqlConnection connection)
+                {
+                    DataTable dataTable = new DataTable();
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(dataTable);
+                    return dataTable;
+                }
 
-            DataTable GetDataTable(string query, SqlConnection connection)
-            {
-                DataTable dataTable = new DataTable();
-                SqlCommand command = new SqlCommand(query, connection);
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                adapter.Fill(dataTable);
-                return dataTable;
-            }
-
-            string query = @"SELECT * FROM BursaryAllocations
+                string query = @"SELECT * FROM BursaryAllocations
                             JOIN Universities
                             ON BursaryAllocations.UniversityID = Universities.UniversityID";
 
 
-            SqlConnection connection = new SqlConnection(_connectionString);
-            connection.Open();
-            List<BursaryHistoryModel> bursaries = new List<BursaryHistoryModel>();
-            DataTable Rows = GetDataTable(query, connection);
-            foreach (DataRow Row in Rows.Rows)
-            {
-                bursaries.Add(new BursaryHistoryModel
+                SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
+                List<BursaryHistoryModel> bursaries = new List<BursaryHistoryModel>();
+                DataTable Rows = GetDataTable(query, connection);
+                foreach (DataRow Row in Rows.Rows)
                 {
-                    AmountAllocated = decimal.Parse(Row["AmountAlloc"].ToString()),
-                    AllocationYear = int.Parse(Row["AllocationYear"].ToString()),
-                    UniName = Row["UniName"].ToString(),
-                    AllocationID = int.Parse(Row["AllocationID"].ToString())
+                    bursaries.Add(new BursaryHistoryModel
+                    {
+                        AmountAllocated = decimal.Parse(Row["AmountAlloc"].ToString()),
+                        AllocationYear = int.Parse(Row["AllocationYear"].ToString()),
+                        UniName = Row["UniName"].ToString(),
+                        AllocationID = int.Parse(Row["AllocationID"].ToString())
 
 
-                });
+                    });
+                }
+
+
+                return Ok(bursaries);
+            } catch {
+                return NotFound("Could not retrieve university payment history");
             }
-
-
-            return Ok(bursaries);
+            
         }
 
         // Add Money to the BBD Budget Table 
@@ -235,7 +253,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add to budget for the year");
             }
 
             
@@ -281,7 +299,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could update budget");
             }
         }
 
@@ -345,7 +363,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.StackTrace}");
+                return BadRequest("Could not allocate funds");
             }
         }
 

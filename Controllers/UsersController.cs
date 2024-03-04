@@ -43,7 +43,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add user");
             }
         }
 
@@ -123,8 +123,8 @@ namespace DatabaseApiCode.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while fetching the user.");
+                    return NotFound("Could not find user");
+
                 }
             }
 
@@ -171,7 +171,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("User not found.");
             }
         }
 
@@ -229,8 +229,7 @@ namespace DatabaseApiCode.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while fetching the users.");
+                    return NotFound("User not found.");
                 }
             }
 
@@ -261,7 +260,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not create user");
             }
         }
 
@@ -291,7 +290,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not create University user");
             }
         }
 
@@ -340,7 +339,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("User not found");
             }
         }
 

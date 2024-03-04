@@ -108,7 +108,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest( "Bursary amount Allocation could not be added");
             }
         }
 
