@@ -90,7 +90,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add user contacts");
             }
         }
         
@@ -135,13 +135,12 @@ namespace DatabaseApiCode.Controllers
                     }
                     else
                     {
-                        return NotFound(); // No contacts found for the specified user ID
+                        return NotFound("Could not find contact details"); // No contacts found for the specified user ID
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while processing the request.");
+                    return NotFound("Could not find contact details");
                 }
             }
         }

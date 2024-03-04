@@ -46,7 +46,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could create student allocate");
             }
 
             /* 
@@ -91,7 +91,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not find all student allocations");
             }
         }
 
@@ -141,7 +141,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not update student allocation");
             }
         }
 
@@ -181,7 +181,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not update student allocation");
             }
         }
 
@@ -220,7 +220,7 @@
                             }
                             else
                             {
-                                return NotFound(); // Allocation with the specified ID not found
+                                return NotFound("Could find student allocation"); 
                             }
                         }
                     }
@@ -228,7 +228,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could find student allocation");
             }
         }
 
@@ -308,7 +308,7 @@
                             }
                             else
                             {
-                                return NotFound(); // Allocation with the specified ID not found
+                                return NotFound("Could find student allocation");
                             }
                         
                     }
@@ -316,7 +316,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could find student allocation");
             }
         }
 
@@ -398,7 +398,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could find all student allocations");
             }
         }
 
@@ -449,7 +449,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could find student allocations in this university"); ;
             }
         }
 
@@ -540,7 +540,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could find student allocations");
             }
         }
 
@@ -580,7 +580,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not create student allocation");
             }
         }
 
@@ -622,7 +622,7 @@
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could deleted student allocation");
             }
         }
 

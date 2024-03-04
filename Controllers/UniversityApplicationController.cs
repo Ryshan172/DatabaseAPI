@@ -60,7 +60,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add University Application");
             }
         }
 
@@ -100,7 +100,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not find all University Applications");
             }
         }
 
@@ -144,7 +144,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add University Application");
             }
         }
 
@@ -200,14 +200,14 @@ namespace DatabaseApiCode.Controllers
                         }
                         else
                         {
-                            return NotFound(); // University with the specified name not found
+                            return NotFound("No university application for specified name"); // University with the specified name not found
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("No university application for specified name");
             }
         }
 
@@ -257,7 +257,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not find all University Applications");
             }
         }
 
@@ -299,7 +299,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not delete University Application");
             }
         }
 

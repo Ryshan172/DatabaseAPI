@@ -55,8 +55,7 @@ namespace DatabaseApiCode.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    return StatusCode(500, "An error occurred while processing the request.");
+                    return NotFound("Could not find user");
                 }
             }
         }

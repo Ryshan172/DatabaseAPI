@@ -38,7 +38,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Department could not be added");
             }
         }
 
@@ -66,7 +66,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not get all departments");
             }
         }
     }

@@ -49,7 +49,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest("Could not add Student");
             }
 
             /* 
@@ -103,7 +103,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not find Students");
             }
         }
 
@@ -157,7 +157,7 @@ namespace DatabaseApiCode.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return NotFound("Could not find Student");
             }
         }
 
